@@ -8,16 +8,15 @@
 import java.rmi.*;
 import java.rmi.server.*;
 /*
-javac ForumInterface.java
+javac RMIInterface.java
 javac Server.java
-javac ForumRMIClient.java
-javac ForumRMIImpl.java
-rmic ForumRMIImpl
+javac Client.java
+javac RMIImpl.java
+rmic 	RMIImpl
 start rmiregistry
-java ForumServer
+java 	Server
 
-
-java ForumRMIClient
+java Client
 
 */
 public class Server
@@ -30,7 +29,7 @@ public class Server
 		{
 			RMIImpl name = new RMIImpl();
 			System.out.println("Registering ...");
-			Naming.rebind("forum", name);	// arithmetic is the name of the service
+			Naming.rebind("TreasureHunter", name);	// arithmetic is the name of the service
 			System.out.println("Register success");
 		}
 		catch(Exception e)

@@ -61,6 +61,5 @@ public class test implements ActionListener{
     public void actionPerformed(ActionEvent e){
         String[] target = e.getSource().toString().split(",");
         tf.setText(target[1]+" "+target[2]);
-        
     }
 }
