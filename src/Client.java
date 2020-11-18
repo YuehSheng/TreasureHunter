@@ -12,9 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.*;
 import java.util.*;
+import java.awt.Color;
 
 public class Client implements ActionListener
 {
+	public static ArrayList<JButton> b = new ArrayList<>();
 	public static TextField tf=new TextField();
 	public static void main (String[] args)
 	{
@@ -37,10 +39,10 @@ public class Client implements ActionListener
 			tf.setBounds(200,50, 150,20);
 			JFrame f=new JFrame("Treasure Hunter");
 			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			ArrayList<JButton> b = new ArrayList<>();
 			for(int j = 80;j < height-100;j+=20) {
 				for (int i = 80; i < width - 100; i += 20) {
 					JButton button = new JButton();
+					button.setBackground(new Color(200, 238, 200));
 					button.setBounds(i, j, 20, 20);
 					b.add(button);
 					button.addActionListener(client);
@@ -63,6 +65,16 @@ public class Client implements ActionListener
 	public void actionPerformed(ActionEvent e){
 		String[] target = e.getSource().toString().split(",");
 		tf.setText(target[1]+" "+target[2]);
-
+		int x = Integer.parseInt(target[1]);
+		int y = Integer.parseInt(target[2]);
+		
+		for(JButton button: b){
+			if(button.getX() == x&&button.getY() == y){
+				button.setBackground(new Color(0, 20, 240));
+			}
+			else{
+				button.setBackground(new Color(200, 238, 200));
+			}
+		}
 	}
 }
