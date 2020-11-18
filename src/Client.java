@@ -17,7 +17,7 @@ import java.awt.Color;
 public class Client
 {
 	public static ArrayList<JButton> b = new ArrayList<>();
-	public static TextField tf=new TextField();
+	public static JLabel label = new JLabel();
 	static boolean login = false;
 	public static void main (String[] args)
 	{
@@ -36,9 +36,8 @@ public class Client
 
 		try {
 			int width = 600,height = 600;
-			tf.setBounds(200,50, 150,20);
 			JFrame f=new JFrame("Treasure Hunter");
-			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 			final JLabel label = new JLabel();
 			label.setBounds(20,150, 200,50);
 			final JPasswordField value = new JPasswordField();
@@ -61,7 +60,7 @@ public class Client
 					data += ", Password: "
 									+ new String(value.getPassword());
 					label.setText(data);
-
+					/*till get server confirm */
 					login = true;
 				}
 			});
@@ -69,7 +68,10 @@ public class Client
 			while(!login){ Thread.sleep(1000); }
 			f.setVisible(false);
 			f=new JFrame("Treasure Hunter");
-
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			JFrame round =new JFrame("Round");
+			JLabel land =  new JLabel("Choose a spot to land");
+			land.setBounds(225,50, 150,20);
 			for(int j = 80;j < height-100;j+=20) {
 				for (int i = 80; i < width - 100; i += 20) {
 					JButton button = new JButton();
@@ -79,7 +81,7 @@ public class Client
 					button.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String[] target = e.getSource().toString().split(",");
-							tf.setText(target[1] + " " + target[2]);
+							land.setText(target[1] + " " + target[2]);
 							int x = Integer.parseInt(target[1]);
 							int y = Integer.parseInt(target[2]);
 							for (JButton button : b) {
@@ -88,6 +90,7 @@ public class Client
 								} else {
 									button.setBackground(new Color(200, 238, 200));
 								}
+								button.setEnabled(false);
 							}
 						}
 					});
@@ -97,7 +100,7 @@ public class Client
 			for(JButton button : b){
 				f.add(button);
 			}
-			f.add(tf);
+			f.add(land);
 			f.setSize(width,height);
 			f.setLayout(null);
 			f.setVisible(true);
