@@ -1,41 +1,79 @@
-//*******************************************************************
-//*  Network Programming - Unit 6 Remote Method Invocation          *
-//*  Program Name: ArithmeticServer                                 *
-//*  The program is the RMI server. It binds the ArithmeticRMIImpl  *
-//*    with name server.                                            *
-//*  2014.02.26                                                     *
-//*******************************************************************
-import java.rmi.*;
-import java.rmi.server.*;
-/*
-javac RMIInterface.java
-javac Server.java
-javac Client.java
-javac RMIImpl.java
-rmic 	RMIImpl
-start rmiregistry
-java 	Server
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 
-java Client
-
-*/
 public class Server
 {
-	// Bind ArithmeticServer and Registry
-	public static void main(String[] args)
+	public static class ScType {
+		Socket s;
+		int name;
+
+		ScType(Socket socket, int name) {
+			this.s = socket;
+			this.name = name;
+		}
+	}
+
+	public ScType 			scType; //Socket and name
+	public Queue<ScType> 	usersocket = new LinkedList<ScType>();
+	public Queue<String> 	room = new LinkedList<String>();
+	
+		
+	
+	public static void main(String[] args) throws IOException
 	{
-		//System.setSecurityManager(new RMISecurityManager());
-		try
-		{
-			RMIImpl name = new RMIImpl();
-			System.out.println("Registering ...");
-			Naming.rebind("TreasureHunter", name);	// arithmetic is the name of the service
-			System.out.println("Register success");
+		ServerSocket 	serverSocket 	= null;
+		Socket 			sc 				= null;
+		int				port			= 6666;
+		int				namecounter		= 0;
+		try{
+			serverSocket = new ServerSocket(port);
+			System.out.println("Waiting for request ...");
+			
+			try{
+				while(true){
+					sc = serverSocket.accept();
+					new Server().usersocket.add(new Server.ScType(sc, namecounter)); // add in queue
+					Thread desktThread = new Thread(new desk(sc, namecounter));
+					desktThread.start();
+				}
+			}
+			catch(IOException e){
+				System.err.println(e);
+			}
+			finally{
+				serverSocket.close();
+			}
+
 		}
-		catch(Exception e)
-		{
-			System.out.println("Exception: " + e.getMessage());
-			e.printStackTrace();
+		catch(IOException e){
+			System.err.println(e);
 		}
+		
+	}
+	
+	public static class desk implements Runnable {
+		int ThreadName;
+		Socket sc = null;
+		InputStream in = null;
+		OutputStream out = null;
+		int port = 6666;
+		byte[] buf = new byte[100];
+
+		public desk(Socket socket, int name) {
+			sc = socket;
+			ThreadName = name;
+			
+		}
+
+		public void run() {
+
+		}
+
 	}
 }
