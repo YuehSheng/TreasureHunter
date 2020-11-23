@@ -19,6 +19,13 @@ public class Client
 	public static ArrayList<JButton> b = new ArrayList<>();
 	public static JLabel label = new JLabel();
 	static boolean login = false;
+
+	public static void map_enable(boolean bool){
+		for (JButton button : b) {
+			button.setEnabled(bool);
+		}
+	}
+
 	public static void main (String[] args)
 	{
 
@@ -77,76 +84,34 @@ public class Client
 
 			Move.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					String[] target = e.getSource().toString().split(",");
-					land.setText(target[1] + " " + target[2]);
-					int x = Integer.parseInt(target[1]);
-					int y = Integer.parseInt(target[2]);
-					for (JButton button : b) {
-						if (button.getX() == x && button.getY() == y) {
-							button.setBackground(new Color(0, 150, 240));
-						} /*else {
-									button.setBackground(new Color(200, 238, 200));
-								}*/
-						button.setEnabled(false);
-					}
+					map_enable(true);
 				}
 			});
 
 			Search.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					String[] target = e.getSource().toString().split(",");
-					land.setText(target[1] + " " + target[2]);
-					int x = Integer.parseInt(target[1]);
-					int y = Integer.parseInt(target[2]);
-					for (JButton button : b) {
-						if (button.getX() == x && button.getY() == y) {
-							button.setBackground(new Color(0, 150, 240));
-						} /*else {
-									button.setBackground(new Color(200, 238, 200));
-								}*/
-						button.setEnabled(false);
-					}
+					/*search for treasure*/
+					map_enable(false);
 				}
 			});
 
 			Dig.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					String[] target = e.getSource().toString().split(",");
-					land.setText(target[1] + " " + target[2]);
-					int x = Integer.parseInt(target[1]);
-					int y = Integer.parseInt(target[2]);
-					for (JButton button : b) {
-						if (button.getX() == x && button.getY() == y) {
-							button.setBackground(new Color(0, 150, 240));
-						} /*else {
-									button.setBackground(new Color(200, 238, 200));
-								}*/
-						button.setEnabled(false);
-					}
+					/*dig the place below player*/
+					map_enable(false);
 				}
 			});
 
 			Props.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					String[] target = e.getSource().toString().split(",");
-					land.setText(target[1] + " " + target[2]);
-					int x = Integer.parseInt(target[1]);
-					int y = Integer.parseInt(target[2]);
-					for (JButton button : b) {
-						if (button.getX() == x && button.getY() == y) {
-							button.setBackground(new Color(0, 150, 240));
-						} /*else {
-									button.setBackground(new Color(200, 238, 200));
-								}*/
-						button.setEnabled(false);
-					}
+					map_enable(false);
 				}
 			});
 
 			for(int j = 60;j < height-100;j+=20) {
 				for (int i = 60; i < width - 400; i += 20) {
 					JButton button = new JButton();
-					button.setBackground(new Color(200, 238, 200));
+					button.setBackground(new Color(40, 150, 100));
 					button.setBounds(i, j, 20, 20);
 					b.add(button);
 					button.addActionListener(new ActionListener() {
@@ -156,11 +121,19 @@ public class Client
 							int x = Integer.parseInt(target[1]);
 							int y = Integer.parseInt(target[2]);
 							for (JButton button : b) {
-								if (button.getX() == x && button.getY() == y) {
+								int bx = button.getX();
+								int by = button.getY();
+								if (bx == x && by == y) {
 									button.setBackground(new Color(0, 150, 240));
-								} /*else {
-									button.setBackground(new Color(200, 238, 200));
-								}*/
+								}
+								else if(Math.abs(x-bx) < 60){
+									if(Math.abs(y-by) < 60){
+										button.setBackground(new Color(200, 200, 200));
+									}
+								}
+								else {
+									button.setBackground(new Color(40, 150, 100));
+								}
 								button.setEnabled(false);
 							}
 						}
