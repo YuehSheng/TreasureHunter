@@ -64,6 +64,10 @@ public class Client
 			while(!login){ Thread.sleep(1000); }
 
 			/*match*/
+			JFrame desk =new JFrame("Match Table");
+			desk.setSize(width/2,height/2);
+			desk.setVisible(true);
+
 
 			/*game*/
 			f.setVisible(false);
@@ -127,13 +131,13 @@ public class Client
 									button.setBackground(new Color(0, 150, 240));
 								}
 								else if(Math.abs(x-bx) < 60){
-									if(Math.abs(y-by) < 60){
+									if(Math.abs(y-by) < 60)
 										button.setBackground(new Color(200, 200, 200));
-									}
+									else
+										button.setBackground(new Color(40, 150, 100));
 								}
-								else {
+								else
 									button.setBackground(new Color(40, 150, 100));
-								}
 								button.setEnabled(false);
 							}
 						}
@@ -155,9 +159,6 @@ public class Client
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
 
-			JFrame round =new JFrame("Round");
-			round.setSize(width/2,height/2);
-			round.setVisible(true);
 		}
 		catch(Exception e)
 		{
