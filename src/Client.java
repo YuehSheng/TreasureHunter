@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 import java.rmi.*;
 import java.util.*;
 import java.awt.Color;
@@ -19,7 +21,7 @@ public class Client
 	public static ArrayList<JButton> b = new ArrayList<>();
 	public static JLabel label = new JLabel();
 	static boolean login = false;
-
+	static int sight = 3;
 	public static void map_enable(boolean bool){
 		for (JButton button : b) {
 			button.setEnabled(bool);
@@ -28,8 +30,8 @@ public class Client
 
 	public static void main (String[] args)
 	{
-
 		try {
+			Socket sc = new Socket("127.0.0.1",6666);
 			int width = 1300,height = 1000;
 			JFrame f=new JFrame("Treasure Hunter");
 			f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -42,14 +44,27 @@ public class Client
 			JLabel l2=new JLabel("Password:");
 			l2.setBounds(20,75, 80,30);
 			JButton login_b = new JButton("Login");
-			login_b.setBounds(100,120, 80,30);
+			JButton register = new JButton("Register");
+			register.setBounds(140,120, 100,30);
+			login_b.setBounds(40,120, 80,30);
 			final JTextField text = new JTextField();
 			text.setBounds(100,20, 100,30);
-			f.add(value); f.add(l1); f.add(label); f.add(l2); f.add(login_b); f.add(text);
+			f.add(value); f.add(l1); f.add(label); f.add(l2); f.add(login_b); f.add(text);f.add(register);
 			f.setSize(300,300);
 			f.setLayout(null);
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
+			register.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String data = "Username " + text.getText();
+					data += ", Password: "
+									+ new String(value.getPassword());
+					label.setText(data);
+
+					/*till get server confirm */
+					login = true;
+				}
+			});
 			login_b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String data = "Username " + text.getText();
@@ -82,6 +97,8 @@ public class Client
 			JButton Props = new JButton("Props");
 			JButton Dig = new JButton("Dig");
 			Move.setBounds(1000, height / 5, 200, 50);
+			JLabel msg =  new JLabel("Get roughly direction of treasure");
+			msg.setBounds(1000,height / 5*2 - 40, 200, 50);
 			Search.setBounds(1000, height / 5*2, 200, 50);
 			Props.setBounds(1000, height / 5*3, 200, 50);
 			Dig.setBounds(1000, height / 5*4, 200, 50);
@@ -115,7 +132,7 @@ public class Client
 			for(int j = 60;j < height-100;j+=20) {
 				for (int i = 60; i < width - 400; i += 20) {
 					JButton button = new JButton();
-					button.setBackground(new Color(40, 150, 100));
+					button.setBackground(new Color(80, 150, 100));
 					button.setBounds(i, j, 20, 20);
 					b.add(button);
 					button.addActionListener(new ActionListener() {
@@ -130,14 +147,14 @@ public class Client
 								if (bx == x && by == y) {
 									button.setBackground(new Color(0, 150, 240));
 								}
-								else if(Math.abs(x-bx) < 60){
-									if(Math.abs(y-by) < 60)
+								else if(Math.abs(x-bx) < sight*20){
+									if(Math.abs(y-by) < sight*20)
 										button.setBackground(new Color(200, 200, 200));
 									else
-										button.setBackground(new Color(40, 150, 100));
+										button.setBackground(new Color(80, 150, 100));
 								}
 								else
-									button.setBackground(new Color(40, 150, 100));
+									button.setBackground(new Color(80, 150, 100));
 								button.setEnabled(false);
 							}
 						}
@@ -148,6 +165,7 @@ public class Client
 			for(JButton button : b){
 				f.add(button);
 			}
+			f.add(msg);
 			f.add(Move);
 			f.add(Search);
 			f.add(Dig);
@@ -158,7 +176,9 @@ public class Client
 			f.setLayout(null);
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
-
+			if(false){
+				sc.close();
+			}
 		}
 		catch(Exception e)
 		{
