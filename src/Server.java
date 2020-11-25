@@ -70,7 +70,6 @@ public class Server
 		catch(IOException e){
 			System.err.println(e);
 		}
-		
 	}
 	
 	public static class desk implements Runnable {
@@ -151,7 +150,8 @@ public class Server
 							break;
 						case 2: //join
 							break;
-						case 3: //reflesh
+						case 3: //refresh
+
 							break;
 						case 4: //exit
 							break;

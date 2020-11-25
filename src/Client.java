@@ -46,6 +46,58 @@ public class Client
 		return b;
 	}
 
+	private static final long serialVersionUID = 1L;
+
+	private static void matchTable() {
+		// Create and set up the window.
+		final JFrame frame = new JFrame("Match table");
+		// Display the window.
+		frame.setSize(400,500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// set flow layout for the frame
+		frame.getContentPane().setLayout(null);
+		JTextField text = new JTextField();
+		text.setBounds(50,50, 100,30);
+		JTextArea textArea = new JTextArea(20, 20);
+		DefaultListModel<String> l1 = new DefaultListModel<>();
+
+		/*
+		get tables from server
+		*/
+		l1.addElement("Item1 ");
+		l1.addElement("Item2 ");
+		l1.addElement("Item3 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		l1.addElement("Item4 ");
+		JList<String> list = new JList<>(l1);
+		list.setBounds(100,100, 200,75);
+		JScrollPane scrollableList = new JScrollPane(list);
+		scrollableList.setBounds(50,150,100,180);
+		scrollableList.setSize(100,200);
+		scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+		JButton join = new JButton("Join");
+		join.setBounds(200,150,100,100);
+
+		JButton create = new JButton("Create");
+		create.setBounds(200,50,100,30);
+
+		frame.add(join);
+		frame.add(create);
+		frame.add(text);
+		frame.add(scrollableList);
+
+		frame.setVisible(true);
+	}
+
 	public static void main (String[] args)
 	{
 		try {
@@ -119,18 +171,17 @@ public class Client
 					} catch (IOException ioException) {
 						ioException.printStackTrace();
 					}
-
-					/*till get server confirm */
-
 				}
 			});
 			/*Login*/
 			while(!login){ Thread.sleep(1000); }
 
 			/*match*/
-			JFrame desk =new JFrame("Match Table");
-			desk.setSize(width/2,height/2);
-			desk.setVisible(true);
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					matchTable();
+				}
+			});
 
 
 			/*game*/
