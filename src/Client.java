@@ -26,18 +26,32 @@ public class Client
 	static boolean login = false;
 	static int sight = 3;
 	static boolean turn = false;
+	static OutputStream out;
+	static InputStream in;
 	public static void map_enable(boolean bool){
 		for (JButton button : b) {
 			button.setEnabled(bool);
 		}
 	}
 
+	public static byte[] send(int mode,String data) throws IOException {
+		byte[] b = new byte[4];
+		ByteBuffer.wrap(b).putInt(0,0);
+		out.write(b);
+		b = new byte[100];
+		b = data.getBytes();
+		out.write(b);
+		b = new byte[4];
+		in.read(b);
+		return b;
+	}
+
 	public static void main (String[] args)
 	{
 		try {
 			Socket sc = new Socket("127.0.0.1",6666);
-			OutputStream out = sc.getOutputStream();
-			InputStream in = sc.getInputStream();
+			out = sc.getOutputStream();
+			in = sc.getInputStream();
 			int width = 1300,height = 1000;
 			JFrame f=new JFrame("Treasure Hunter");
 			f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -94,15 +108,7 @@ public class Client
 					String data = account+" "+pass;
 					label.setText(data);
 					try {
-						byte[] b = new byte[4];
-						ByteBuffer.wrap(b).putInt(0,0);
-						out.write(b);
-						b = new byte[100];
-						b = data.getBytes();
-						out.write(b);
-						b = new byte[4];
-						in.read(b);
-						int result = ByteBuffer.wrap(b).getInt(0);
+						int result = ByteBuffer.wrap(send(0,data)).getInt(0);
 						System.out.println(result);
 						if(result == 1 ||result == 2){
 							login = true;
