@@ -59,6 +59,31 @@ public class Client
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
 			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+			JFrame error = new JFrame("");
+			error.setSize(250,250);
+			error.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			JLabel msg1 = new JLabel("Wrong password or this account");
+			JLabel msg2 = new JLabel("has been registered.");
+			JLabel msg3 = new JLabel("Please try again");
+			msg1.setBounds(20,50,250,20);
+			msg2.setBounds(53,70,250,20);
+			msg3.setBounds(67,100,200,80);
+			JButton ok = new JButton("OK");
+			ok.setBounds(75,150,80,40);
+			ok.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					error.setVisible(false);
+				}
+			});
+			error.add(msg1);
+			error.add(msg2);
+			error.add(msg3);
+			error.add(ok);
+			error.setLayout(null);
+			error.setLocationRelativeTo(null);
+			error.setVisible(false);
+
 			login_b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String account = text.getText();
@@ -67,15 +92,15 @@ public class Client
 						return;
 					}
 					String data = account+" "+pass;
-//					label.setText(account+pass);
+					label.setText(data);
 					try {
 						byte[] b = new byte[4];
 						ByteBuffer.wrap(b).putInt(0,0);
 						out.write(b);
 						b = new byte[100];
-						System.arraycopy(data.getBytes(),0,b,0,data.getBytes().length);
+						b = data.getBytes();
 						out.write(b);
-						b = new byte[100];
+						b = new byte[4];
 						in.read(b);
 						int result = ByteBuffer.wrap(b).getInt(0);
 						System.out.println(result);
@@ -83,29 +108,6 @@ public class Client
 							login = true;
 						}
 						else{
-							JFrame error = new JFrame("");
-							error.setSize(250,250);
-							error.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-							JLabel msg1 = new JLabel("Wrong password or this account");
-							JLabel msg2 = new JLabel("has been registered.");
-							JLabel msg3 = new JLabel("Please try again");
-							msg1.setBounds(20,50,250,20);
-							msg2.setBounds(53,70,250,20);
-							msg3.setBounds(67,100,200,80);
-							JButton ok = new JButton("OK");
-							ok.setBounds(75,150,80,40);
-							ok.addActionListener(new ActionListener() {
-								public void actionPerformed(ActionEvent e) {
-//									error.setVisible(false);
-									error.setVisible(false);
-								}
-							});
-							error.add(msg1);
-							error.add(msg2);
-							error.add(msg3);
-							error.add(ok);
-							error.setLayout(null);
-							error.setLocationRelativeTo(null);
 							error.setVisible(true);
 						}
 					} catch (IOException ioException) {

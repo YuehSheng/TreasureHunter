@@ -116,7 +116,7 @@ public class Server
 							File account = new File("src/account.txt");
 							FileWriter myWriter;
 							Scanner myReader;
-							buf = new byte[104];
+							buf = new byte[]{0, 0, 0, 0};
 							try {
 								myReader = new Scanner(account);
 								while (myReader.hasNextLine()){
@@ -132,7 +132,7 @@ public class Server
 									}
 								}
 								myReader.close();
-								if(Arrays.equals(buf, new byte[104])){
+								if(Arrays.equals(buf,new byte[] {0,0,0,0})){
 									myWriter = new FileWriter("src/account.txt",true);
 									myWriter.write(acc+" "+pass+"\n");
 									myWriter.close();
