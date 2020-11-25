@@ -90,9 +90,15 @@ public class Server
 			try {
 				in = sc.getInputStream();
 				while(flag){
+					/*
+					* 0~4 mode
+					* 5~54 account
+					* 55~104 password
+					*
+					* */
 					buf = new byte[100];
 					in.read(buf);
-					mode = ByteBuffer.wrap(buf, 0, 4).getInt(); //name = 0,create = 1,join = 2,refresh = 3,back = 4
+					mode = ByteBuffer.wrap(buf, 0, 4).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
 					data = new String(ByteBuffer.wrap(buf, 4, buf.length-4).array());//0:playname,1:roomname,2:join roomname
 					System.out.println(mode);
 					System.out.println(data);

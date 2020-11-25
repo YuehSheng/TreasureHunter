@@ -11,7 +11,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.rmi.*;
 import java.util.*;
 import java.awt.Color;
@@ -22,6 +24,7 @@ public class Client
 	public static JLabel label = new JLabel();
 	static boolean login = false;
 	static int sight = 3;
+	static boolean turn = false;
 	public static void map_enable(boolean bool){
 		for (JButton button : b) {
 			button.setEnabled(bool);
@@ -56,10 +59,21 @@ public class Client
 			f.setVisible(true);
 			register.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					String data = "Username " + text.getText();
-					data += ", Password: "
-									+ new String(value.getPassword());
-					label.setText(data);
+					String account = text.getText();
+					String pass = new String(value.getPassword());
+
+					label.setText(account+pass);
+					OutputStream out  = null;
+					try {
+						out = sc.getOutputStream();
+						byte[] b = new byte[104];
+						System.arraycopy(ByteBuffer.allocate(4).putInt(0,0).array(),0,b,0,4);
+						System.arraycopy(account.getBytes(),0,b,5,50);
+						System.arraycopy(pass.getBytes(),0,b,55,50);
+						out.write(b);
+					} catch (IOException ioException) {
+						ioException.printStackTrace();
+					}
 
 					/*till get server confirm */
 					login = true;
@@ -97,12 +111,14 @@ public class Client
 			JButton Props = new JButton("Props");
 			JButton Dig = new JButton("Dig");
 			Move.setBounds(1000, height / 5, 200, 50);
-			JLabel msg =  new JLabel("Get roughly direction of treasure");
-			msg.setBounds(1000,height / 5*2 - 40, 200, 50);
+			JLabel searchMsg =  new JLabel("Get roughly direction of treasure");
+			searchMsg.setBounds(1000,height / 5*2 - 40, 200, 50);
+
 			Search.setBounds(1000, height / 5*2, 200, 50);
 			Props.setBounds(1000, height / 5*3, 200, 50);
 			Dig.setBounds(1000, height / 5*4, 200, 50);
-
+			JLabel digMsg =  new JLabel("Dig the place below player");
+			digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
 			Move.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					map_enable(true);
@@ -112,14 +128,14 @@ public class Client
 			Search.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					/*search for treasure*/
-					map_enable(false);
+
 				}
 			});
 
 			Dig.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					/*dig the place below player*/
-					map_enable(false);
+
 				}
 			});
 
@@ -165,7 +181,8 @@ public class Client
 			for(JButton button : b){
 				f.add(button);
 			}
-			f.add(msg);
+			f.add(digMsg);
+			f.add(searchMsg);
 			f.add(Move);
 			f.add(Search);
 			f.add(Dig);
