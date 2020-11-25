@@ -162,7 +162,8 @@ public class Server
 				sc.close();
 			} 
 			catch (IOException e) {
-				System.err.println(e);
+				System.out.println("P"+this.ThreadName + " out");
+//				System.out.println(e);
 			}
 
 		}
