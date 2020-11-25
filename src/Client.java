@@ -61,15 +61,14 @@ public class Client
 				public void actionPerformed(ActionEvent e) {
 					String account = text.getText();
 					String pass = new String(value.getPassword());
-
+					String data = account+" "+pass;
 					label.setText(account+pass);
 					OutputStream out  = null;
 					try {
 						out = sc.getOutputStream();
-						byte[] b = new byte[104];
+						byte[] b = new byte[1000];
 						System.arraycopy(ByteBuffer.allocate(4).putInt(0,0).array(),0,b,0,4);
-						System.arraycopy(account.getBytes(),0,b,5,50);
-						System.arraycopy(pass.getBytes(),0,b,55,50);
+						System.arraycopy(data.getBytes(),0,b,4,data.getBytes().length);
 						out.write(b);
 					} catch (IOException ioException) {
 						ioException.printStackTrace();

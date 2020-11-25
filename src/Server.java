@@ -91,21 +91,20 @@ public class Server
 				in = sc.getInputStream();
 				while(flag){
 					/*
-					* 0~4 mode
-					* 5~54 account
-					* 55~104 password
+					* 0~3 mode
+					* 4~53 account
+					* 54~103 password
 					*
 					* */
-					buf = new byte[100];
+					buf = new byte[1000];
 					in.read(buf);
 					mode = ByteBuffer.wrap(buf, 0, 4).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
 					data = new String(ByteBuffer.wrap(buf, 4, buf.length-4).array());//0:playname,1:roomname,2:join roomname
-					System.out.println(mode);
-					System.out.println(data);
 					switch(mode){
 						case 0: //name
+							mode = -1;
 							PlayName = data;
-							System.out.println(data);
+							System.out.print(data);
 							break;
 						case 1: //create
 							new Server().room.add(new RoomType(data, PlayName, sc));
