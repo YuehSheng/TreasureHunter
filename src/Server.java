@@ -1,11 +1,14 @@
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Server
 {
@@ -89,6 +92,7 @@ public class Server
 		public void run() {
 			try {
 				in = sc.getInputStream();
+				out = sc.getOutputStream();
 				while(flag){
 					/*
 					* 0~3 mode
@@ -96,15 +100,51 @@ public class Server
 					* 54~103 password
 					*
 					* */
-					buf = new byte[1000];
+					buf = new byte[4];
 					in.read(buf);
-					mode = ByteBuffer.wrap(buf, 0, 4).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
-					data = new String(ByteBuffer.wrap(buf, 4, buf.length-4).array());//0:playname,1:roomname,2:join roomname
+					mode = ByteBuffer.wrap(buf).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
+					buf = new byte[100];
+					int len = in.read(buf);
+					data = new String(buf);//0:playname,1:roomname,2:join roomname
 					switch(mode){
 						case 0: //name
 							mode = -1;
+							String[] s = data.split(" ");
+							String acc = s[0];
+							String pass = s[1].trim();
+							System.out.println(acc+" "+pass);
+							File member = new File("src/account.txt");
+							FileWriter myWriter = null;
+							Scanner myReader = null;
+							buf = new byte[104];
+							try {
+								myReader = new Scanner(member);
+								while (myReader.hasNextLine()){
+									String line = myReader.nextLine();
+									s = line.split(" ");
+									if(acc.equals(s[0])) {
+										if(pass.equals(s[1])){//log in
+											ByteBuffer.wrap(buf,0,4).putInt(1);
+										}
+										else{//wrong pass
+											ByteBuffer.wrap(buf,0,4).putInt(-1);
+										}
+									}
+								}
+								myReader.close();
+								if(Arrays.equals(buf, new byte[104])){
+									myWriter = new FileWriter("src/account.txt",true);
+									myWriter.write(acc+" "+pass+"\n");
+									myWriter.close();
+									ByteBuffer.wrap(buf,0,4).putInt(2);
+								}
+								out.write(buf);
+
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
+
 							PlayName = data;
-							System.out.print(data);
 							break;
 						case 1: //create
 							new Server().room.add(new RoomType(data, PlayName, sc));

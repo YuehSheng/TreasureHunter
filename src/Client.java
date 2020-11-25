@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -35,6 +36,8 @@ public class Client
 	{
 		try {
 			Socket sc = new Socket("127.0.0.1",6666);
+			OutputStream out = sc.getOutputStream();
+			InputStream in = sc.getInputStream();
 			int width = 1300,height = 1000;
 			JFrame f=new JFrame("Treasure Hunter");
 			f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -46,46 +49,42 @@ public class Client
 			l1.setBounds(20,20, 80,30);
 			JLabel l2=new JLabel("Password:");
 			l2.setBounds(20,75, 80,30);
-			JButton login_b = new JButton("Login");
-			JButton register = new JButton("Register");
-			register.setBounds(140,120, 100,30);
-			login_b.setBounds(40,120, 80,30);
+			JButton login_b = new JButton("Login / Register");
+			login_b.setBounds(40,120, 200,30);
 			final JTextField text = new JTextField();
 			text.setBounds(100,20, 100,30);
-			f.add(value); f.add(l1); f.add(label); f.add(l2); f.add(login_b); f.add(text);f.add(register);
+			f.add(value); f.add(l1); f.add(label); f.add(l2); f.add(login_b); f.add(text);
 			f.setSize(300,300);
 			f.setLayout(null);
 			f.setLocationRelativeTo(null);
 			f.setVisible(true);
-			register.addActionListener(new ActionListener() {
+
+			login_b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String account = text.getText();
 					String pass = new String(value.getPassword());
 					String data = account+" "+pass;
 					label.setText(account+pass);
-					OutputStream out  = null;
 					try {
-						out = sc.getOutputStream();
-						byte[] b = new byte[1000];
-						System.arraycopy(ByteBuffer.allocate(4).putInt(0,0).array(),0,b,0,4);
-						System.arraycopy(data.getBytes(),0,b,4,data.getBytes().length);
+						byte[] b = new byte[4];
+						ByteBuffer.wrap(b).putInt(0,0);
 						out.write(b);
+						b = new byte[100];
+						System.arraycopy(data.getBytes(),0,b,0,data.getBytes().length);
+						out.write(b);
+						b = new byte[100];
+						in.read(b);
+						int result = ByteBuffer.wrap(b).getInt(0);
+						System.out.println(result);
+						if(result == 1 ||result == 2){
+							login = true;
+						}
 					} catch (IOException ioException) {
 						ioException.printStackTrace();
 					}
 
 					/*till get server confirm */
-					login = true;
-				}
-			});
-			login_b.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					String data = "Username " + text.getText();
-					data += ", Password: "
-									+ new String(value.getPassword());
-					label.setText(data);
-					/*till get server confirm */
-					login = true;
+
 				}
 			});
 			/*Login*/
