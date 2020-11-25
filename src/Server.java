@@ -113,12 +113,12 @@ public class Server
 							String acc = s[0];
 							String pass = s[1].trim();
 							System.out.println(acc+" "+pass);
-							File member = new File("src/account.txt");
-							FileWriter myWriter = null;
-							Scanner myReader = null;
+							File account = new File("src/account.txt");
+							FileWriter myWriter;
+							Scanner myReader;
 							buf = new byte[104];
 							try {
-								myReader = new Scanner(member);
+								myReader = new Scanner(account);
 								while (myReader.hasNextLine()){
 									String line = myReader.nextLine();
 									s = line.split(" ");
