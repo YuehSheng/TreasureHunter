@@ -23,6 +23,8 @@ public class Client
 {
 	public static ArrayList<JButton> b = new ArrayList<>();
 	public static JLabel label = new JLabel();
+	public static JFrame matchTable = new JFrame("Match table");
+	public static JScrollPane scrollableList;
 	static boolean login = false;
 	static int sight = 3;
 	static boolean turn = false;
@@ -47,30 +49,53 @@ public class Client
 		return b;
 	}
 
+	public static void sendMode(int mode) throws IOException {
+		byte[] b = new byte[4];
+		ByteBuffer.wrap(b).putInt(0,mode);
+		out.write(b);
+		out.write("1".getBytes());
+	}
+
+	public static ArrayList<String> refresh() throws IOException {
+		ArrayList<String> strings = new ArrayList<>();
+		sendMode(3);
+		byte[] b = new byte[4];
+		in.read(b);
+		int num = ByteBuffer.wrap(b,0,4).getInt(0);
+		for(int i=0;i < num;i++){
+			b = new byte[100];
+			in.read(b);
+			String str = new String(b).trim();
+			strings.add(str);
+		}
+		return strings;
+	}
+
 	private static final long serialVersionUID = 1L;
 
-	private static void matchTable() {
+	private static void matchTable() throws IOException {
 		// Create and set up the window.
-		final JFrame frame = new JFrame("Match table");
 		// Display the window.
-		frame.setSize(400,500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		matchTable.setSize(400,500);
+		matchTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// set flow layout for the frame
-		frame.getContentPane().setLayout(null);
+		matchTable.getContentPane().setLayout(null);
 		JTextField text = new JTextField();
 		text.setBounds(50,50, 100,30);
 		JTextArea textArea = new JTextArea(20, 20);
-		DefaultListModel<String> l1 = new DefaultListModel<>();
+
 
 		/*
 		get tables from server
 		*/
-		l1.addElement("Item1 ");
-
+		DefaultListModel<String> l1 = new DefaultListModel<>();
+		for(String s : refresh()){
+			l1.addElement(s);
+		}
 		JList<String> list = new JList<>(l1);
 		list.setBounds(100,100, 200,75);
-		JScrollPane scrollableList = new JScrollPane(list);
+		scrollableList = new JScrollPane(list);
 		scrollableList.setBounds(50,150,100,180);
 		scrollableList.setSize(100,210);
 		scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -78,10 +103,31 @@ public class Client
 
 		JButton refresh = new JButton("Refresh");
 		refresh.setBounds(200,150,100,100);
-
+		refresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					matchTable.getContentPane().remove(scrollableList);
+					DefaultListModel<String> l1 = new DefaultListModel<>();
+					for(String s : refresh()){
+						l1.addElement(s);
+					}
+					JList<String> list = new JList<>(l1);
+					list.setBounds(100,100, 200,75);
+					scrollableList = new JScrollPane(list);
+					scrollableList.setBounds(50,150,100,180);
+					scrollableList.setSize(100,210);
+					scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+					matchTable.getContentPane().add(scrollableList);
+					matchTable.invalidate();
+					matchTable.validate();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 		JButton join = new JButton("Join");
 		join.setBounds(200,260,100,100);
-
 
 		JButton create = new JButton("Create");
 		create.setBounds(200,50,100,30);
@@ -89,6 +135,9 @@ public class Client
       public void actionPerformed(ActionEvent e) {
 				try {
 					String name = text.getText();
+					if(name.equals("")){
+						return;
+					}
 					System.out.println(name);
 					byte[] buf = send(1,name);
 					int result = ByteBuffer.wrap(buf,0,4).getInt(0);
@@ -98,19 +147,18 @@ public class Client
 					else{
 						System.out.println("Create fail");
 					}
-
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
 			}
     });
 
-		frame.add(join);
-		frame.add(create);
-		frame.add(text);
-		frame.add(scrollableList);
-		frame.add(refresh);
-		frame.setVisible(true);
+		matchTable.add(join);
+		matchTable.add(create);
+		matchTable.add(text);
+		matchTable.getContentPane().add(scrollableList);
+		matchTable.add(refresh);
+		matchTable.setVisible(true);
 	}
 
 	public static void main (String[] args)
@@ -195,7 +243,11 @@ public class Client
 			/*match*/
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					matchTable();
+					try {
+						matchTable();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			});
 

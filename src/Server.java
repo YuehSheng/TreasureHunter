@@ -141,6 +141,7 @@ public class Server
 							PlayName = acc;
 							break;
 						case 1: //create
+							mode = -1;
 							System.out.println(PlayName +" create");
 							String roomName = data.trim();
 							buf = new byte[4];
@@ -161,11 +162,21 @@ public class Server
 							out.write(buf);
 							break;
 						case 2: //join
+							mode = -1;
 							break;
 						case 3: //refresh
-
+							mode = -1;
+							buf = new byte[4];
+							ByteBuffer.wrap(buf,0,4).putInt(0,room.size());
+							out.write(buf);
+							for (RoomType r : room){
+								Thread.sleep(20); // avoid client receiving many rooms in one read()
+								buf =  r.RoomName.getBytes();
+								out.write(buf);
+							}
 							break;
 						case 4: //exit
+							mode = -1;
 							break;
 					}
 					
@@ -173,7 +184,7 @@ public class Server
 				in.close();
 				sc.close();
 			} 
-			catch (IOException e) {
+			catch (IOException | InterruptedException e) {
 				System.out.println("P"+this.ThreadName + " out");
 //				System.out.println(e);
 			}
