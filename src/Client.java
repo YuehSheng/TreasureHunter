@@ -26,6 +26,7 @@ public class Client
 	static boolean login = false;
 	static int sight = 3;
 	static boolean turn = false;
+	static String acc;
 	static OutputStream out;
 	static InputStream in;
 	public static void map_enable(boolean bool){
@@ -36,7 +37,7 @@ public class Client
 
 	public static byte[] send(int mode,String data) throws IOException {
 		byte[] b = new byte[4];
-		ByteBuffer.wrap(b).putInt(0,0);
+		ByteBuffer.wrap(b).putInt(0,mode);
 		out.write(b);
 		b = new byte[100];
 		b = data.getBytes();
@@ -66,35 +67,49 @@ public class Client
 		get tables from server
 		*/
 		l1.addElement("Item1 ");
-		l1.addElement("Item2 ");
-		l1.addElement("Item3 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
-		l1.addElement("Item4 ");
+
 		JList<String> list = new JList<>(l1);
 		list.setBounds(100,100, 200,75);
 		JScrollPane scrollableList = new JScrollPane(list);
 		scrollableList.setBounds(50,150,100,180);
-		scrollableList.setSize(100,200);
+		scrollableList.setSize(100,210);
 		scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+		JButton refresh = new JButton("Refresh");
+		refresh.setBounds(200,150,100,100);
+
 		JButton join = new JButton("Join");
-		join.setBounds(200,150,100,100);
+		join.setBounds(200,260,100,100);
+
 
 		JButton create = new JButton("Create");
 		create.setBounds(200,50,100,30);
+    create.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+				try {
+					String name = text.getText();
+					System.out.println(name);
+					byte[] buf = send(1,name);
+					int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+					if(result == 1){
+						System.out.println("Create success");
+					}
+					else{
+						System.out.println("Create fail");
+					}
+
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+    });
 
 		frame.add(join);
 		frame.add(create);
 		frame.add(text);
 		frame.add(scrollableList);
-
+		frame.add(refresh);
 		frame.setVisible(true);
 	}
 
@@ -163,6 +178,7 @@ public class Client
 						int result = ByteBuffer.wrap(send(0,data)).getInt(0);
 						System.out.println(result);
 						if(result == 1 ||result == 2){
+						  acc = account;
 							login = true;
 						}
 						else{

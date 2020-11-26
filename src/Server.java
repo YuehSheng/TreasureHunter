@@ -28,6 +28,7 @@ public class Server
 		String P2_name;
 		Socket P2;
 		RoomType(String name, String P1_name, Socket P1){
+			System.out.println("create "+name+" by "+P1_name);
 			this.RoomName = name;
 			this.P1_name = P1_name;
 			this.P1 = P1;
@@ -35,8 +36,8 @@ public class Server
 	}
 
 	public ScType 			scType; //Socket and name
-	public Queue<ScType> 	usersocket = new LinkedList<ScType>();
-	public Queue<RoomType> 	room = new LinkedList<RoomType>();
+	public static Queue<ScType> 	userSocket = new LinkedList<ScType>();
+	public static Queue<RoomType> 	room = new LinkedList<RoomType>();
 	
 		
 	
@@ -53,7 +54,7 @@ public class Server
 			try{
 				while(true){
 					sc = serverSocket.accept();
-					new Server().usersocket.add(new Server.ScType(sc, namecounter)); // add in queue
+					new Server().userSocket.add(new Server.ScType(sc, namecounter)); // add in queue
 					System.out.println("P" + namecounter + " in");
 					Thread desktThread = new Thread(new desk(sc, namecounter++));
 					desktThread.start();
@@ -79,9 +80,9 @@ public class Server
 		InputStream in = null;
 		OutputStream out = null;
 		int port = 6666;
+		boolean flag = true;
 		int mode;
 		byte[] buf = new byte[100];
-		boolean flag = true;
 		String data;
 		public desk(Socket socket, int name) {
 			sc = socket;
@@ -93,15 +94,9 @@ public class Server
 				in = sc.getInputStream();
 				out = sc.getOutputStream();
 				while(flag){
-					/*
-					* 0~3 mode
-					* 4~53 account
-					* 54~103 password
-					*
-					* */
 					buf = new byte[4];
 					in.read(buf);
-					mode = ByteBuffer.wrap(buf).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
+					mode = ByteBuffer.wrap(buf,0,4).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
 					buf = new byte[100];
 					int len = in.read(buf);
 					data = new String(buf);//0:playname,1:roomname,2:join roomname
@@ -143,10 +138,27 @@ public class Server
 								e.printStackTrace();
 							}
 
-							PlayName = data;
+							PlayName = acc;
 							break;
 						case 1: //create
-							new Server().room.add(new RoomType(data, PlayName, sc));
+							System.out.println(PlayName +" create");
+							String roomName = data.trim();
+							buf = new byte[4];
+							boolean exist = false;
+							for (RoomType r : room){
+								if (r.RoomName.equals(roomName)) {
+									exist = true;
+									break;
+								}
+							}
+							if(!exist){
+								room.add(new RoomType(roomName, PlayName, sc));
+								ByteBuffer.wrap(buf,0,4).putInt(1);
+							}
+							else{
+								ByteBuffer.wrap(buf,0,4).putInt(-1);
+							}
+							out.write(buf);
 							break;
 						case 2: //join
 							break;
@@ -165,8 +177,6 @@ public class Server
 				System.out.println("P"+this.ThreadName + " out");
 //				System.out.println(e);
 			}
-
 		}
-
 	}
 }
