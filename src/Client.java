@@ -228,8 +228,25 @@ public class Client
 		join.setBounds(200,260,100,100);
 		join.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JList l = (JList) scrollableList.getViewport().getView();
-				System.out.println(l.getSelectedValue());
+				JList l = (JList) scrollableList.getViewport().getView();//get new list
+				String sel = l.getSelectedValue().toString();
+				System.out.println("select "+sel);
+				try {
+					byte[] buf = send(2,sel);
+
+					int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+					if(result == 1){
+						System.out.println("join");
+						match = true;
+						matchTable.setVisible(false);
+						return;
+					}
+					else {
+						System.out.println("fail");
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 		});
 
@@ -257,7 +274,6 @@ public class Client
 								waiting.setEnabled(false);
 								waiting.setVisible(false);
 								matchTable.remove(waiting);
-
 								/*exit*/
 								try {
 									sendMode(4);
@@ -274,7 +290,8 @@ public class Client
 						waiting.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 						waiting.setModal(true);
 						waiting.setVisible(true);
-
+						buf = new byte[4];
+						in.read(buf);
 					}
 					else{
 						System.out.println("Create fail");
@@ -371,7 +388,7 @@ public class Client
 			/*Login*/
 			while(!login){ Thread.sleep(1000); }
 			f.setVisible(false);
-			boolean match = false;
+			match = false;
 			/*match*/
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

@@ -28,6 +28,7 @@ public class Server
 		int owner;
 		String P2_name;
 		Socket P2;
+		boolean play;
 		RoomType(String name, String P1_name, Socket P1,int owner){
 			System.out.println("create "+name+" by "+P1_name);
 			this.RoomName = name;
@@ -99,10 +100,10 @@ public class Server
 				out = sc.getOutputStream();
 				while(flag){
 					buf = new byte[4];
-					in.read(buf);
+					in.read(buf); //read mode
 					mode = ByteBuffer.wrap(buf,0,4).getInt(); //login = 0,create = 1,join = 2,refresh = 3,back = 4
 					buf = new byte[100];
-					int len = in.read(buf);
+					in.read(buf); //read data
 					data = new String(buf);//0:playname,1:roomname,2:join roomname
 					switch(mode){
 						case 0: //name
@@ -167,6 +168,22 @@ public class Server
 							break;
 						case 2: //join
 							mode = -1;
+							buf = new byte[4];
+							roomName = data.trim();
+							for (RoomType r :room){
+								if(r.RoomName.equals(roomName)){
+									if(!r.play){
+										r.P2_name = this.PlayName;
+										r.P2 = this.sc;
+										r.play = true;
+										ByteBuffer.wrap(buf,0,4).putInt(0,1);
+									}
+								}
+								else {
+									ByteBuffer.wrap(buf,0,4).putInt(0,0);
+								}
+								out.write(buf);
+							}
 							break;
 						case 3: //refresh
 							mode = -1;
