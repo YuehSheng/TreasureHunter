@@ -25,13 +25,16 @@ public class Server
 		String RoomName;
 		String P1_name;
 		Socket P1;
+		int owner;
 		String P2_name;
 		Socket P2;
-		RoomType(String name, String P1_name, Socket P1){
+		RoomType(String name, String P1_name, Socket P1,int owner){
 			System.out.println("create "+name+" by "+P1_name);
 			this.RoomName = name;
 			this.P1_name = P1_name;
 			this.P1 = P1;
+			this.owner = owner;
+			P2_name = "";
 		}
 	}
 
@@ -56,8 +59,8 @@ public class Server
 					sc = serverSocket.accept();
 					new Server().userSocket.add(new Server.ScType(sc, namecounter)); // add in queue
 					System.out.println("P" + namecounter + " in");
-					Thread desktThread = new Thread(new desk(sc, namecounter++));
-					desktThread.start();
+					Thread matchTableThread = new Thread(new matchTable(sc, namecounter++));
+					matchTableThread.start();
 				}
 			}
 			catch(IOException e){
@@ -73,7 +76,7 @@ public class Server
 		}
 	}
 	
-	public static class desk implements Runnable {
+	public static class matchTable implements Runnable {
 		int ThreadName;
 		String PlayName;
 		Socket sc = null;
@@ -84,7 +87,8 @@ public class Server
 		int mode;
 		byte[] buf = new byte[100];
 		String data;
-		public desk(Socket socket, int name) {
+
+		public matchTable(Socket socket, int name) {
 			sc = socket;
 			ThreadName = name;
 		}
@@ -153,7 +157,7 @@ public class Server
 								}
 							}
 							if(!exist){
-								room.add(new RoomType(roomName, PlayName, sc));
+								room.add(new RoomType(roomName, PlayName, sc,ThreadName));
 								ByteBuffer.wrap(buf,0,4).putInt(1);
 							}
 							else{
@@ -177,6 +181,7 @@ public class Server
 							break;
 						case 4: //exit
 							mode = -1;
+							room.removeIf(r -> r.owner == ThreadName);
 							break;
 					}
 					
@@ -186,6 +191,16 @@ public class Server
 			} 
 			catch (IOException | InterruptedException e) {
 				System.out.println("P"+this.ThreadName + " out");
+				for (RoomType r : room){
+					if(r.owner == ThreadName){
+						if(r.P2_name.equals("")){ //only one
+							room.remove(r);
+						}
+						else{	//two
+
+						}
+					}
+				}
 //				System.out.println(e);
 			}
 		}
