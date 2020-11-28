@@ -553,6 +553,12 @@ public class Client
 					}
 					System.out.println("waiting");
 				}
+				else if(match){
+					matchTable.getContentPane().removeAll();
+					matchTable.setVisible(false);
+					System.out.println("match!");
+					break;
+				}
 				Thread.sleep(100);
 			}
 
