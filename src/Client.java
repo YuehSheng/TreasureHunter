@@ -26,6 +26,7 @@ public class Client
 	public static JScrollPane scrollableList;
 	static boolean login = false;
 	static boolean match = false;
+	static boolean wait = false;
 	static int sight = 3;
 	static boolean turn = false;
 	static String acc;
@@ -71,122 +72,118 @@ public class Client
 		return strings;
 	}
 
-	private static final long serialVersionUID = 1L;
 	private static void game() throws IOException {
-		int width = 1300,height = 1000;
-		JFrame game = new JFrame("Treasure Hunter");
-		game.setVisible(false);
-		game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JLabel land =  new JLabel("Choose a spot to land");
-		land.setBounds(width/2-110,30, 150,20);
-		JLabel turn =  new JLabel("Your turn");
-		turn.setBounds(1000,30, 150,20);
-		JButton Move = new JButton("Move");
-		JButton Search = new JButton("Search");
-		JButton Props = new JButton("Props");
-		JButton Dig = new JButton("Dig");
-		Move.setBounds(1000, height / 5, 200, 50);
-		JLabel searchMsg =  new JLabel("Get roughly direction of treasure");
-		searchMsg.setBounds(1000,height / 5*2 - 40, 200, 50);
-
-		Search.setBounds(1000, height / 5*2, 200, 50);
-		Props.setBounds(1000, height / 5*3, 200, 50);
-		Dig.setBounds(1000, height / 5*4, 200, 50);
-		JLabel digMsg =  new JLabel("Dig the place below player");
-		digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
-		Move.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				map_enable(true);
-			}
-		});
-
-		Search.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				/*search for treasure*/
-
-			}
-		});
-
-		Dig.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				/*dig the place below player*/
-
-			}
-		});
-
-		Props.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				map_enable(false);
-			}
-		});
-
-		for(int j = 60;j < height-100;j+=20) {
-			for (int i = 60; i < width - 400; i += 20) {
-				JButton button = new JButton();
-				button.setBackground(new Color(80, 150, 100));
-				button.setBounds(i, j, 20, 20);
-				b.add(button);
-				button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						String[] target = e.getSource().toString().split(",");
-						land.setText(target[1] + " " + target[2]);
-						int x = Integer.parseInt(target[1]);
-						int y = Integer.parseInt(target[2]);
-						for (JButton button : b) {
-							int bx = button.getX();
-							int by = button.getY();
-							if (bx == x && by == y) {
-								button.setBackground(new Color(0, 150, 240));
-							}
-							else if(Math.abs(x-bx) < sight*20){
-								if(Math.abs(y-by) < sight*20)
-									button.setBackground(new Color(200, 200, 200));
-								else
-									button.setBackground(new Color(80, 150, 100));
-							}
-							else
-								button.setBackground(new Color(80, 150, 100));
-							button.setEnabled(false);
-						}
-					}
-				});
-			}
-		}
-
-		for(JButton button : b){
-			game.add(button);
-		}
-		game.add(digMsg);
-		game.add(searchMsg);
-		game.add(Move);
-		game.add(Search);
-		game.add(Dig);
-		game.add(Props);
-		game.add(land);
-		game.add(turn);
-		game.setSize(width,height);
-		game.setLayout(null);
-		game.setLocationRelativeTo(null);
-		game.setVisible(true);
+//		int width = 1300,height = 1000;
+//		JFrame game = new JFrame("Treasure Hunter");
+//		game.setVisible(false);
+//		game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		JLabel land =  new JLabel("Choose a spot to land");
+//		land.setBounds(width/2-110,30, 150,20);
+//		JLabel turn =  new JLabel("Your turn");
+//		turn.setBounds(1000,30, 150,20);
+//		JButton Move = new JButton("Move");
+//		JButton Search = new JButton("Search");
+//		JButton Props = new JButton("Props");
+//		JButton Dig = new JButton("Dig");
+//		Move.setBounds(1000, height / 5, 200, 50);
+//		JLabel searchMsg =  new JLabel("Get roughly direction of treasure");
+//		searchMsg.setBounds(1000,height / 5*2 - 40, 200, 50);
+//
+//		Search.setBounds(1000, height / 5*2, 200, 50);
+//		Props.setBounds(1000, height / 5*3, 200, 50);
+//		Dig.setBounds(1000, height / 5*4, 200, 50);
+//		JLabel digMsg =  new JLabel("Dig the place below player");
+//		digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
+//		Move.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				map_enable(true);
+//			}
+//		});
+//
+//		Search.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				/*search for treasure*/
+//
+//			}
+//		});
+//
+//		Dig.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				/*dig the place below player*/
+//
+//			}
+//		});
+//
+//		Props.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				map_enable(false);
+//			}
+//		});
+//
+//		for(int j = 60;j < height-100;j+=20) {
+//			for (int i = 60; i < width - 400; i += 20) {
+//				JButton button = new JButton();
+//				button.setBackground(new Color(80, 150, 100));
+//				button.setBounds(i, j, 20, 20);
+//				b.add(button);
+//				button.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						String[] target = e.getSource().toString().split(",");
+//						land.setText(target[1] + " " + target[2]);
+//						int x = Integer.parseInt(target[1]);
+//						int y = Integer.parseInt(target[2]);
+//						for (JButton button : b) {
+//							int bx = button.getX();
+//							int by = button.getY();
+//							if (bx == x && by == y) {
+//								button.setBackground(new Color(0, 150, 240));
+//							}
+//							else if(Math.abs(x-bx) < sight*20){
+//								if(Math.abs(y-by) < sight*20)
+//									button.setBackground(new Color(200, 200, 200));
+//								else
+//									button.setBackground(new Color(80, 150, 100));
+//							}
+//							else
+//								button.setBackground(new Color(80, 150, 100));
+//							button.setEnabled(false);
+//						}
+//					}
+//				});
+//			}
+//		}
+//
+//		for(JButton button : b){
+//			game.add(button);
+//		}
+//		game.add(digMsg);
+//		game.add(searchMsg);
+//		game.add(Move);
+//		game.add(Search);
+//		game.add(Dig);
+//		game.add(Props);
+//		game.add(land);
+//		game.add(turn);
+//		game.setSize(width,height);
+//		game.setLayout(null);
+//		game.setLocationRelativeTo(null);
+//		game.setVisible(true);
 	}
 
-	private static void matchTable() throws IOException {
+	/*private static void matchTable() throws IOException, InterruptedException {
 		JFrame matchTable = new JFrame("Match table");
-		// Create and set up the window.
-		// Display the window.
 		matchTable.setSize(400,500);
 		matchTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// set flow layout for the frame
 		matchTable.getContentPane().setLayout(null);
 		JTextField text = new JTextField();
 		text.setBounds(50,50, 100,30);
 		JTextArea textArea = new JTextArea(20, 20);
 
 
-		/*
-		get tables from server
-		*/
+
+		//get tables from server
+
 		DefaultListModel<String> l1 = new DefaultListModel<>();
 		for(String s : refresh()){
 			l1.addElement(s);
@@ -239,7 +236,6 @@ public class Client
 						System.out.println("join");
 						match = true;
 						matchTable.setVisible(false);
-						return;
 					}
 					else {
 						System.out.println("fail");
@@ -265,16 +261,17 @@ public class Client
 					if(result == 1){
 						System.out.println("Create success");
 
-						JDialog waiting = new JDialog(matchTable);
+						JFrame waiting = new JFrame("waiting");
 						JPanel p1 = new JPanel(new BorderLayout());
 						p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
 						JButton button = new JButton("Exit");
 						button.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
+								matchTable.setEnabled(true);
 								waiting.setEnabled(false);
 								waiting.setVisible(false);
 								matchTable.remove(waiting);
-								/*exit*/
+//								exit
 								try {
 									sendMode(4);
 								} catch (IOException ex) {
@@ -287,11 +284,11 @@ public class Client
 						waiting.getContentPane().add(button,BorderLayout.SOUTH);
 						waiting.pack();
 						waiting.setLocationRelativeTo(matchTable);
-						waiting.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-						waiting.setModal(true);
+						waiting.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 						waiting.setVisible(true);
-						buf = new byte[4];
-						in.read(buf);
+						matchTable.setEnabled(false);
+						wait = true;
+//						System.out.println(in.available());
 					}
 					else{
 						System.out.println("Create fail");
@@ -308,7 +305,17 @@ public class Client
 		matchTable.getContentPane().add(scrollableList);
 		matchTable.add(refresh);
 		matchTable.setVisible(true);
-	}
+		while (true){
+			if(wait){
+				if(in.available() > 0){
+					byte[] buf = new byte[4];
+					in.read(buf);
+				}
+				System.out.println("waiting");
+			}
+			Thread.sleep(100);
+		}
+	}*/
 
 	public static void main (String[] args)
 	{
@@ -322,15 +329,15 @@ public class Client
 			label.setBounds(20,150, 200,50);
 			final JPasswordField value = new JPasswordField();
 			value.setBounds(100,75,100,30);
-			JLabel l1=new JLabel("Username:");
-			l1.setBounds(20,20, 80,30);
+			JLabel name=new JLabel("Username:");
+			name.setBounds(20,20, 80,30);
 			JLabel l2=new JLabel("Password:");
 			l2.setBounds(20,75, 80,30);
 			JButton login_b = new JButton("Login / Register");
 			login_b.setBounds(40,120, 200,30);
 			final JTextField text = new JTextField();
 			text.setBounds(100,20, 100,30);
-			f.add(value); f.add(l1); f.add(label); f.add(l2); f.add(login_b); f.add(text);
+			f.add(value); f.add(name); f.add(label); f.add(l2); f.add(login_b); f.add(text);
 			f.setSize(300,300);
 			f.setLayout(null);
 			f.setLocationRelativeTo(null);
@@ -390,29 +397,262 @@ public class Client
 			f.setVisible(false);
 			match = false;
 			/*match*/
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			/*javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					try {
 						matchTable();
-					} catch (IOException e) {
+						return;
+					} catch (IOException | InterruptedException e) {
 						e.printStackTrace();
+					}
+				}
+			});*/
+			JFrame matchTable = new JFrame("Match table");
+			matchTable.setSize(400,500);
+			matchTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+			matchTable.getContentPane().setLayout(null);
+			final JTextField rName = new JTextField();
+			rName.setBounds(50,50, 100,30);
+//			JTextArea textArea = new JTextArea(20, 20);
+
+
+		/*
+		get tables from server
+		*/
+			DefaultListModel<String> l1 = new DefaultListModel<>();
+			for(String s : refresh()){
+				l1.addElement(s);
+			}
+			JList<String> list = new JList<>(l1);
+			list.setBounds(100,100, 200,75);
+			scrollableList = new JScrollPane(list);
+			scrollableList.setBounds(50,150,100,180);
+			scrollableList.setSize(100,210);
+			scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+			JButton refresh = new JButton("Refresh");
+			refresh.setBounds(200,150,100,100);
+			refresh.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						matchTable.getContentPane().remove(scrollableList);
+						DefaultListModel<String> l1 = new DefaultListModel<>();
+						for(String s : refresh()){
+							l1.addElement(s);
+						}
+						JList<String> list = new JList<>(l1);
+						list.setBounds(100,100, 200,75);
+						scrollableList = new JScrollPane(list);
+						scrollableList.setBounds(50,150,100,180);
+						scrollableList.setSize(100,210);
+						scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+						scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+						matchTable.getContentPane().add(scrollableList);
+						matchTable.invalidate();
+						matchTable.validate();
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				}
+			});
+			JButton join = new JButton("Join");
+			join.setBounds(200,260,100,100);
+			join.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JList l = (JList) scrollableList.getViewport().getView();//get new list
+					String sel = l.getSelectedValue().toString();
+					System.out.println("select "+sel);
+					try {
+						byte[] buf = send(2,sel);
+
+						int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+						if(result == 1){
+							System.out.println("join");
+							match = true;
+							matchTable.setVisible(false);
+						}
+						else {
+							System.out.println("fail");
+						}
+					} catch (IOException ex) {
+						ex.printStackTrace();
 					}
 				}
 			});
 
-			while(!match){ Thread.sleep(1000); }
+			JButton create = new JButton("Create");
+			create.setBounds(200,50,100,30);
+			create.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						String name = rName.getText();
+						if(name.equals("")){
+							return;
+						}
+						System.out.println(name);
+						byte[] buf = send(1,name);
+						int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+						if(result == 1){
+							System.out.println("Create success");
+
+							JFrame waiting = new JFrame("waiting");
+							JPanel p1 = new JPanel(new BorderLayout());
+							p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
+							JButton button = new JButton("Exit");
+							button.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent e) {
+									matchTable.setEnabled(true);
+									waiting.setEnabled(false);
+									waiting.setVisible(false);
+									matchTable.remove(waiting);
+									/*exit*/
+									try {
+										sendMode(4);
+									} catch (IOException ex) {
+										ex.printStackTrace();
+									}
+								}
+							});
+							waiting.setUndecorated(true);
+							waiting.getContentPane().add(p1);
+							waiting.getContentPane().add(button,BorderLayout.SOUTH);
+							waiting.pack();
+							waiting.setLocationRelativeTo(matchTable);
+							waiting.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+							waiting.setVisible(true);
+							matchTable.setEnabled(false);
+							wait = true;
+//						System.out.println(in.available());
+						}
+						else{
+							System.out.println("Create fail");
+						}
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				}
+			});
+
+			matchTable.add(join);
+			matchTable.add(create);
+			matchTable.add(rName);
+			matchTable.getContentPane().add(scrollableList);
+			matchTable.add(refresh);
+			matchTable.setVisible(true);
+			while (true){ /*debug*/
+				if(wait){
+					if(in.available() > 0){
+						byte[] buf = new byte[4];
+						in.read(buf);
+						match = true;
+						matchTable.setVisible(false);
+						System.out.println("match!");
+						break;
+					}
+					System.out.println("waiting");
+				}
+				Thread.sleep(100);
+			}
 
 			/*game*/
 
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						game();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+			int width = 1300,height = 1000;
+			JFrame game = new JFrame("Treasure Hunter");
+			game.setVisible(false);
+			game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			JLabel land =  new JLabel("Choose a spot to land");
+			land.setBounds(width/2-110,30, 150,20);
+			JLabel turn =  new JLabel("Your turn");
+			turn.setBounds(1000,30, 150,20);
+			JButton Move = new JButton("Move");
+			JButton Search = new JButton("Search");
+			JButton Props = new JButton("Props");
+			JButton Dig = new JButton("Dig");
+			Move.setBounds(1000, height / 5, 200, 50);
+			JLabel searchMsg =  new JLabel("Get roughly direction of treasure");
+			searchMsg.setBounds(1000,height / 5*2 - 40, 200, 50);
+
+			Search.setBounds(1000, height / 5*2, 200, 50);
+			Props.setBounds(1000, height / 5*3, 200, 50);
+			Dig.setBounds(1000, height / 5*4, 200, 50);
+			JLabel digMsg =  new JLabel("Dig the place below player");
+			digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
+			Move.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					map_enable(true);
 				}
 			});
+
+			Search.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					/*search for treasure*/
+
+				}
+			});
+
+			Dig.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					/*dig the place below player*/
+
+				}
+			});
+
+			Props.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					map_enable(false);
+				}
+			});
+
+			for(int j = 60;j < height-100;j+=20) {
+				for (int i = 60; i < width - 400; i += 20) {
+					JButton button = new JButton();
+					button.setBackground(new Color(80, 150, 100));
+					button.setBounds(i, j, 20, 20);
+					b.add(button);
+					button.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String[] target = e.getSource().toString().split(",");
+							land.setText(target[1] + " " + target[2]);
+							int x = Integer.parseInt(target[1]);
+							int y = Integer.parseInt(target[2]);
+							for (JButton button : b) {
+								int bx = button.getX();
+								int by = button.getY();
+								if (bx == x && by == y) {
+									button.setBackground(new Color(0, 150, 240));
+								}
+								else if(Math.abs(x-bx) < sight*20){
+									if(Math.abs(y-by) < sight*20)
+										button.setBackground(new Color(200, 200, 200));
+									else
+										button.setBackground(new Color(80, 150, 100));
+								}
+								else
+									button.setBackground(new Color(80, 150, 100));
+								button.setEnabled(false);
+							}
+						}
+					});
+				}
+			}
+
+			for(JButton button : b){
+				game.add(button);
+			}
+			game.add(digMsg);
+			game.add(searchMsg);
+			game.add(Move);
+			game.add(Search);
+			game.add(Dig);
+			game.add(Props);
+			game.add(land);
+			game.add(turn);
+			game.setSize(width,height);
+			game.setLayout(null);
+			game.setLocationRelativeTo(null);
+			game.setVisible(true);
 			if(false){
 				sc.close();
 			}
