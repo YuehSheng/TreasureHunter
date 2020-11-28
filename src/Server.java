@@ -184,7 +184,7 @@ public class Server
 											// game start waiting back
 											flag = false;
 											Game game = new Game(r.P1, r.P2);
-											game.start();
+											//game.start();
 										}
 									} else {
 										ByteBuffer.wrap(buf, 0, 4).putInt(0, 0);
