@@ -177,6 +177,15 @@ public class Server
 										r.P2 = this.sc;
 										r.play = true;
 										ByteBuffer.wrap(buf,0,4).putInt(0,1);
+										//talk to P1
+										Socket sc_p1 = r.P1;
+										OutputStream out_P1 = sc_p1.getOutputStream();
+										byte[] buf_P1 = new byte[]{0,0,0,1};
+										out_P1.write(buf_P1);
+										//gamestart 
+										//use new thread game
+										Game game = new Game(r.P1, r.P2);
+										game.start();
 									}
 								}
 								else {
