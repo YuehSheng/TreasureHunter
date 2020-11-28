@@ -176,22 +176,21 @@ public class Server
 										r.P2_name = this.PlayName;
 										r.P2 = this.sc;
 										r.play = true;
-										ByteBuffer.wrap(buf,0,4).putInt(0,1);
-										//talk to P1
-										Socket sc_p1 = r.P1;
-										OutputStream out_P1 = sc_p1.getOutputStream();
-										byte[] buf_P1 = new byte[]{0,0,0,1};
-										out_P1.write(buf_P1);
-										//gamestart 
-										//use new thread game
+										ByteBuffer.wrap(buf,0,4).putInt(1);
+										out.write(buf);
+
+										//send to P1
+										r.P1.getOutputStream().write(buf);
+										r.P1.getOutputStream().flush();
+										
 										Game game = new Game(r.P1, r.P2);
 										game.start();
 									}
 								}
 								else {
 									ByteBuffer.wrap(buf,0,4).putInt(0,0);
+									out.write(buf);
 								}
-								out.write(buf);
 							}
 							break;
 						case 3: //refresh
