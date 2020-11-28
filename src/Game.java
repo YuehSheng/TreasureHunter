@@ -2,23 +2,27 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Random;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Game extends Thread {
     int P1 = 0;
     int P2 = 1;
+    public enum Item { // mix with item type
+        nothing, treasure, arrow, wall
+    }
+
     Socket[] Play = new Socket[2];
     InputStream[] in = new InputStream[2];
     OutputStream[] out = new OutputStream[2];
     boolean win = false;
     String order = null;
-    int[] pos_x = new int[2]; // position
+    int[] pos_x = new int[2]; // player1 and player2 position
     int[] pos_y = new int[2];
 
-    public enum Item { // mix with item type
-        nothing, treasure, arrow, wall
-    }
-
-    public class map_type { // use to create map
+    // use to create map
+    Queue<map_type> map = new LinkedList<map_type>();
+    public class map_type { 
         int x;
         int y;
         int item_type; // 0 is nothing, 1 is win point,....
@@ -29,7 +33,13 @@ public class Game extends Thread {
             item_type = type;
         }
     }
+    
+    public void createmap(){ //create map
 
+    }
+
+
+    
     public Game(Socket player1, Socket player2) {
         Play[P1] = player1;
         Play[P2] = player2;
