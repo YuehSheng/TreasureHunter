@@ -28,7 +28,8 @@ public class Client
 	static boolean match = false;
 	static boolean wait = false;
 	static int sight = 3;
-	static boolean turn = false;
+	static byte[] map;
+	static int x = -1,y = -1;
 	static String acc;
 	static OutputStream out;
 	static InputStream in;
@@ -618,13 +619,15 @@ public class Client
 					JButton button = new JButton();
 					button.setBackground(new Color(80, 150, 100));
 					button.setBounds(i, j, 20, 20);
+					button.setEnabled(false);
 					b.add(button);
 					button.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String[] target = e.getSource().toString().split(",");
 							land.setText(target[1] + " " + target[2]);
-							int x = Integer.parseInt(target[1]);
-							int y = Integer.parseInt(target[2]);
+							x = ((Integer.parseInt(target[1]))-60)/20;
+							y = (Integer.parseInt(target[2])-60)/20;
+							System.out.println(x+" "+y);
 							for (JButton button : b) {
 								int bx = button.getX();
 								int by = button.getY();
@@ -640,6 +643,11 @@ public class Client
 								else
 									button.setBackground(new Color(80, 150, 100));
 								button.setEnabled(false);
+							}
+							try {
+								send(0,x+" "+y);
+							} catch (IOException ex) {
+								ex.printStackTrace();
 							}
 						}
 					});
@@ -661,6 +669,31 @@ public class Client
 			game.setLayout(null);
 			game.setLocationRelativeTo(null);
 			game.setVisible(true);
+			Move.setEnabled(false);
+			Props.setEnabled(false);
+			Dig.setEnabled(false);
+			Search.setEnabled(false);
+			while (true){
+				byte[] buf = new byte[4];
+				in.read(buf);
+				String str = new String(buf).trim();
+				System.out.println(str);
+				if(str.equals("run")){
+					map = new byte[42*42];
+					in.read(map);
+					Move.setEnabled(true);
+					Props.setEnabled(true);
+					Dig.setEnabled(true);
+					Search.setEnabled(true);
+				}
+				else if(str.equals("stop")){
+
+				}
+				else if(str.equals("win")){
+					break;
+				}
+			}
+
 			if(false){
 				sc.close();
 			}
