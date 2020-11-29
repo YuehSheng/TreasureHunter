@@ -414,6 +414,7 @@ public class Client
 			matchTable.getContentPane().setLayout(null);
 			final JTextField rName = new JTextField();
 			rName.setBounds(50,50, 100,30);
+			JFrame waiting = new JFrame("waiting");
 //			JTextArea textArea = new JTextArea(20, 20);
 
 
@@ -497,7 +498,7 @@ public class Client
 						if(result == 1){
 							System.out.println("Create success");
 
-							JFrame waiting = new JFrame("waiting");
+
 							JPanel p1 = new JPanel(new BorderLayout());
 							p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
 							JButton button = new JButton("Exit");
@@ -541,13 +542,14 @@ public class Client
 			matchTable.getContentPane().add(scrollableList);
 			matchTable.add(refresh);
 			matchTable.setVisible(true);
-			while (true){ /*debug*/
+			while (true){
 				if(wait){
 					if(in.available() > 0){
 						byte[] buf = new byte[4];
 						in.read(buf);
 						match = true;
 						matchTable.setVisible(false);
+						waiting.setVisible(false);
 						System.out.println("match!");
 						break;
 					}
