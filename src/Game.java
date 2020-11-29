@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.ProcessBuilder.Redirect.Type;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
@@ -23,15 +24,17 @@ public class Game extends Thread {
 
 
     public class map_type {
-        Item type; // 0 is nothing, 1 is win point,....
+        byte type; // 0 is nothing, 1 is win point,....
         map_type(Item type) {
-            this.type = type;
+            this.type = (byte) (type.ordinal() & 0xff);
         }
     }
 
     // use to create map
     map_type[][] map = new map_type[42][42];
-    
+    // use to send
+    byte[] send_map = new byte[42*42];
+
     public void createMap(){ //create map
         for (int i = 0;i < 42;i++){
             for(int j = 0;j < 42;j++){
@@ -50,26 +53,31 @@ public class Game extends Thread {
             switch (i){
                 case 0:
                     map[x][y] = new map_type(Item.treasure);
+                    send_map[42 * x + y] = map[x][y].type;
                     break;
                 case 1:
                 case 2:
                 case 3:
                     map[x][y] = new map_type(Item.arrow);
+                    send_map[42 * x + y] = map[x][y].type;
                     break;
                 case 4:
                 case 5:
                 case 6:
                     map[x][y] = new map_type(Item.wall);
+                    send_map[42 * x + y] = map[x][y].type;
                     break;
                 case 7:
                 case 8:
                 case 9:
                     map[x][y] = new map_type(Item.increase);
+                    send_map[42 * x + y] = map[x][y].type;
                     break;
                 case 10:
                 case 11:
                 case 12:
                     map[x][y] = new map_type(Item.decrease);
+                    send_map[42 * x + y] = map[x][y].type;
                     break;
             }
         }
@@ -97,7 +105,7 @@ public class Game extends Thread {
         try {
             while (!win) {
                 out[turn_counter].write(order.getBytes());
-                //out[turn_counter].write(map);
+                out[turn_counter].write(send_map);
                 
                 
                 turn_counter = (turn_counter+1)%2;
