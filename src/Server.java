@@ -204,7 +204,6 @@ public class Server
 						case 4: // exit
 							mode = -1;
 							room.removeIf(r -> r.owner == ThreadName);
-							exit = true;
 							break;
 					}
 				}
