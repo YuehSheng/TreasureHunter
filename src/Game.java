@@ -155,7 +155,6 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         break;
@@ -169,7 +168,6 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         break;
@@ -182,6 +180,12 @@ public class Game extends Thread {
 
                         break;
                     case 14: // wait : if order is stop client should send 'wait' back
+                        wait_counter[turn_counter]--;
+                        if (wait_counter[(turn_counter + 1) % 2] == 0) {
+                            order = "run";
+                        } else {
+                            order = "wait";
+                        }
                         break;
                 }
 
