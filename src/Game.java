@@ -4,8 +4,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class Game extends Thread {
     int P1 = 0;
@@ -22,23 +20,14 @@ public class Game extends Thread {
     int[] pos_x = new int[2]; // player1 and player2 position
     int[] pos_y = new int[2];
 
-
-    public class map_type {
-        byte type; // 0 is nothing, 1 is win point,....
-        map_type(Item type) {
-            this.type = (byte) (type.ordinal() & 0xff);
-        }
-    }
-
     // use to create map
-    map_type[][] map = new map_type[42][42];
     // use to send
-    byte[] send_map = new byte[42*42];
+    byte[] map = new byte[42*42];
 
     public void createMap(){ //create map
         for (int i = 0;i < 42;i++){
             for(int j = 0;j < 42;j++){
-                map[i][j] = new map_type(Item.nothing);
+                map[42*i+j] = (byte) (Item.nothing.ordinal() & 0xff);
             }
         }
         HashSet<Integer> randPos = new HashSet<>();
@@ -52,32 +41,27 @@ public class Game extends Thread {
             System.out.println(x+" "+y);
             switch (i){
                 case 0:
-                    map[x][y] = new map_type(Item.treasure);
-                    send_map[42 * x + y] = map[x][y].type;
+                    map[42 * y + x] = (byte) (Item.treasure.ordinal() & 0xff);
                     break;
                 case 1:
                 case 2:
                 case 3:
-                    map[x][y] = new map_type(Item.arrow);
-                    send_map[42 * x + y] = map[x][y].type;
+                    map[42 * y + x] = (byte) (Item.arrow.ordinal() & 0xff);
                     break;
                 case 4:
                 case 5:
                 case 6:
-                    map[x][y] = new map_type(Item.wall);
-                    send_map[42 * x + y] = map[x][y].type;
+                    map[42 * y + x] = (byte) (Item.wall.ordinal() & 0xff);
                     break;
                 case 7:
                 case 8:
                 case 9:
-                    map[x][y] = new map_type(Item.increase);
-                    send_map[42 * x + y] = map[x][y].type;
+                    map[42 * y + x] = (byte) (Item.increase.ordinal() & 0xff);
                     break;
                 case 10:
                 case 11:
                 case 12:
-                    map[x][y] = new map_type(Item.decrease);
-                    send_map[42 * x + y] = map[x][y].type;
+                    map[42 * y + x] = (byte) (Item.decrease.ordinal() & 0xff);
                     break;
             }
         }
@@ -105,7 +89,7 @@ public class Game extends Thread {
         try {
             while (!win) {
                 out[turn_counter].write(order.getBytes());
-                out[turn_counter].write(send_map);
+                out[turn_counter].write(map);
                 
                 
                 turn_counter = (turn_counter+1)%2;
