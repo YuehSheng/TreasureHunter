@@ -8,10 +8,12 @@ import java.util.Random;
 public class Game extends Thread {
     int P1 = 0;
     int P2 = 1;
+
     public enum Item { // mix with item type
         nothing, treasure, arrow, wall, increase,decrease // props*3 treasure*1
     }
-
+    
+    String Roomname;
     Socket[] Play = new Socket[2];
     InputStream[] in = new InputStream[2];
     OutputStream[] out = new OutputStream[2];
@@ -69,7 +71,8 @@ public class Game extends Thread {
 
 
     
-    public Game(Socket player1, Socket player2) {
+    public Game(String Roomname,Socket player1, Socket player2) {
+        this.Roomname = Roomname;
         Play[P1] = player1;
         Play[P2] = player2;
         try {
@@ -84,17 +87,46 @@ public class Game extends Thread {
 
     public void run() {
         int turn_counter = (int) (Math.random() * 2); // 0 is P1 turn , 1 is P2 turn
+        int mode = 0;
+        byte[] client_mode = new byte[4];
+        byte[] client_action = new byte[100];
         order = "run";// run, stop, win
         createMap();
         try {
             while (!win) {
                 out[turn_counter].write(order.getBytes());
                 out[turn_counter].write(map);
+                in[turn_counter].read(client_mode);
+                in[turn_counter].read(client_action);
+                mode = ByteBuffer.wrap(client_mode, 0, 4).getInt();
+                
+                switch(mode){
+                    case 0: // move 
+                        //read move position
+                        //have to delete this position props
+
+                        break;
+                    case 1: // search
+                        //read direction
+
+                        break;
+                    case 2: // props
+                        //read item number
+
+                        break;
+                    case 3: // dig
+                        //read dig position
+
+                        break;
+                    case 4: // wait : if order is stop client should send 'wait' back
+                        break;
+                }
                 
                 
                 turn_counter = (turn_counter+1)%2;
             }
         } catch (IOException e) {
+            //if someone out should send server to delete this room
             e.printStackTrace();
         }
     }

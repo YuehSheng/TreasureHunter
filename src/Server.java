@@ -183,7 +183,7 @@ public class Server
 											r.P1.getOutputStream().flush();
 											// game start waiting back
 											flag = false;
-											Game game = new Game(r.P1, r.P2);
+											Game game = new Game(r.RoomName ,r.P1, r.P2);
 											game.start();
 										}
 									} else {
