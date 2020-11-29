@@ -156,6 +156,9 @@ public class Game extends Thread {
                         map[42*y+x] = (byte) (Item.nothing.ordinal() & 0xff);
                         if(wait_counter[(turn_counter+1)%2] == 0){
                             order = "run";
+                        } else {
+                            wait_counter[(turn_counter + 1) % 2]--;
+                            order = "wait";
                         }
                         break;
                     case 1: // search
@@ -167,6 +170,9 @@ public class Game extends Thread {
                         out[turn_counter].write(direction.getBytes());
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
+                        } else {
+                            wait_counter[(turn_counter + 1) % 2]--;
+                            order = "wait";
                         }
                         break;
                     case 2: // props
