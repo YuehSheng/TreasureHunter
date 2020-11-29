@@ -85,8 +85,54 @@ public class Game extends Thread {
         }
     }
 
+    public String find_direction(int x, int y){
+        int treasure_x = 0;
+        int treasure_y = 0;
+        int dirX = 0;
+        int dirY = 0;
+        String direction;
+        for (int i = 0; i < 42 * 42; i++) {
+            if (map[i] == (byte) (Item.treasure.ordinal() & 0xff)) {
+                treasure_y = i / 42;
+                treasure_x = i % 42;
+                break;
+            }
+        }
+        dirX = x - treasure_x;
+        dirY = y - treasure_y;
+        if (dirX == 0) {
+            if (dirY == 0) {
+                direction = "ground";
+            } else if (dirY > 0) {
+                direction = "north";
+            } else {
+                direction = "south";
+            }
+        } else if (dirX > 0) {
+            if (dirY == 0) {
+                direction = "west";
+            } else if (dirY > 0) {
+                direction = "Northwest";
+            } else {
+                direction = "Southwest";
+            }
+        } else {
+            if (dirY == 0) {
+                direction = "east";
+            } else if (dirY > 0) {
+                direction = "Northeast";
+            } else {
+                direction = "Southeast";
+            }
+        }
+        return direction;
+    }
+
     public void run() {
         int turn_counter = (int) (Math.random() * 2); // 0 is P1 turn , 1 is P2 turn
+        int[] wait_counter = new int[2]; //arrow stop counter
+        wait_counter[P1] = 0;
+        wait_counter[P2] = 0;
         int mode = 0;
         byte[] client_mode = new byte[4];
         byte[] client_action = new byte[100];
@@ -102,13 +148,26 @@ public class Game extends Thread {
                 
                 switch(mode){
                     case 0: // move 
+                        //client should send int x, int y
                         //read move position
                         //have to delete this position props
-
+                        int x = ByteBuffer.wrap(client_action,0,4).getInt();
+                        int y = ByteBuffer.wrap(client_action,4,4).getInt();
+                        map[42*y+x] = (byte) (Item.nothing.ordinal() & 0xff);
+                        if(wait_counter[(turn_counter+1)%2] == 0){
+                            order = "run";
+                        }
                         break;
                     case 1: // search
-                        //read direction
-
+                        //read position
+                        //send direction
+                        x = ByteBuffer.wrap(client_action, 0, 4).getInt();
+                        y = ByteBuffer.wrap(client_action, 4, 4).getInt();
+                        String direction = find_direction(x, y);
+                        out[turn_counter].write(direction.getBytes());
+                        if (wait_counter[(turn_counter + 1) % 2] == 0) {
+                            order = "run";
+                        }
                         break;
                     case 2: // props
                         //read item number
