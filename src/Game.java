@@ -155,11 +155,11 @@ public class Game extends Thread {
                         String[] s = pos.split(" ");
                         int x = Integer.parseInt(s[0]);
                         int y = Integer.parseInt(s[1]);
+                        System.out.println(x + " " + y);
                         map[42 * y + x] = (byte) (Item.nothing.ordinal() & 0xff);
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         byte[] buf = new byte[]{0,0,0,1};
@@ -175,12 +175,12 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         break;
                     case 12: // props
                         // read item number
+                        // use which item and change order and wait_counter to next player
 
                         break;
                     case 13: // dig
