@@ -43,7 +43,11 @@ public class Client
 		byte[] b = new byte[4];
 		ByteBuffer.wrap(b).putInt(0,mode);
 		out.write(b);
-		b = new byte[100];
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		b = data.getBytes();
 		out.write(b);
 		b = new byte[4];
@@ -629,6 +633,8 @@ public class Client
 							y = (Integer.parseInt(target[2])-60)/20;
 							System.out.println(x+" "+y);
 							for (JButton button : b) {
+								game.remove(button);
+
 								int bx = button.getX();
 								int by = button.getY();
 								if (bx == x && by == y) {
@@ -645,10 +651,14 @@ public class Client
 								button.setEnabled(false);
 							}
 							try {
-								send(0,x+" "+y);
+								send(10,x+" "+y);
 							} catch (IOException ex) {
 								ex.printStackTrace();
 							}
+							Move.setEnabled(false);
+							Props.setEnabled(false);
+							Dig.setEnabled(false);
+							Search.setEnabled(false);
 						}
 					});
 				}

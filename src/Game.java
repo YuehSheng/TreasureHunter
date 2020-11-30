@@ -139,8 +139,10 @@ public class Game extends Thread {
         try {
             while (!win) {
                 out[turn_counter].write(order.getBytes());
+
                 out[turn_counter].write(map);
                 in[turn_counter].read(client_mode);
+                System.out.println("get mode" + ByteBuffer.wrap(client_mode).getInt());
                 in[turn_counter].read(client_action);
                 mode = ByteBuffer.wrap(client_mode, 0, 4).getInt();
 
@@ -149,8 +151,10 @@ public class Game extends Thread {
                         // client should send int x, int y
                         // read move position
                         // have to delete this position props
-                        int x = ByteBuffer.wrap(client_action, 0, 4).getInt();
-                        int y = ByteBuffer.wrap(client_action, 4, 4).getInt();
+                        String pos = new String(client_action).trim();
+                        String[] s = pos.split(" ");
+                        int x = Integer.parseInt(s[0]);
+                        int y = Integer.parseInt(s[1]);
                         map[42 * y + x] = (byte) (Item.nothing.ordinal() & 0xff);
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
@@ -158,6 +162,8 @@ public class Game extends Thread {
                             wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
+                        byte[] buf = new byte[]{0,0,0,1};
+                        out[turn_counter].write(buf);
                         break;
                     case 11: // search
                         // read position

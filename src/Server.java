@@ -84,7 +84,8 @@ public class Server
 		InputStream in = null;
 		OutputStream out = null;
 		int port = 6666;
-		boolean exit = false;
+		boolean play = false;
+		boolean end = false;
 		int mode;
 		byte[] buf = new byte[100];
 		String data;
@@ -98,113 +99,117 @@ public class Server
 			try {
 				in = sc.getInputStream();
 				out = sc.getOutputStream();
-				while(!exit){
-					buf = new byte[4];
-					in.read(buf); // read mode
-					mode = ByteBuffer.wrap(buf, 0, 4).getInt(); // login = 0,create = 1,join = 2,refresh = 3,back = 4
-					buf = new byte[100];
-					in.read(buf); // read data
-					data = new String(buf);// 0:playname,1:roomname,2:join roomname
-					switch (mode) {
-						case 0: // name
-							mode = -1;
-							String[] s = data.split(" ");
-							String acc = s[0];
-							String pass = s[1].trim();
-							System.out.println(acc + " " + pass);
-							File account = new File("src/account.txt");
-							FileWriter myWriter;
-							Scanner myReader;
-							buf = new byte[] { 0, 0, 0, 0 };
-							try {
-								myReader = new Scanner(account);
-								while (myReader.hasNextLine()) {
-									String line = myReader.nextLine();
-									s = line.split(" ");
-									if (acc.equals(s[0])) {
-										if (pass.equals(s[1])) {// log in
-											ByteBuffer.wrap(buf, 0, 4).putInt(1);
-										} else {// wrong pass
-											ByteBuffer.wrap(buf, 0, 4).putInt(-1);
+				while(!end){
+					while (!play){
+						buf = new byte[4];
+						in.read(buf); // read mode
+						mode = ByteBuffer.wrap(buf, 0, 4).getInt(); // login = 0,create = 1,join = 2,refresh = 3,back = 4
+						buf = new byte[100];
+						in.read(buf); // read data
+						data = new String(buf);// 0:playname,1:roomname,2:join roomname
+						switch (mode) {
+							case 0: // name
+								mode = -1;
+								String[] s = data.split(" ");
+								String acc = s[0];
+								String pass = s[1].trim();
+								System.out.println(acc + " " + pass);
+								File account = new File("src/account.txt");
+								FileWriter myWriter;
+								Scanner myReader;
+								buf = new byte[] { 0, 0, 0, 0 };
+								try {
+									myReader = new Scanner(account);
+									while (myReader.hasNextLine()) {
+										String line = myReader.nextLine();
+										s = line.split(" ");
+										if (acc.equals(s[0])) {
+											if (pass.equals(s[1])) {// log in
+												ByteBuffer.wrap(buf, 0, 4).putInt(1);
+											} else {// wrong pass
+												ByteBuffer.wrap(buf, 0, 4).putInt(-1);
+											}
 										}
 									}
-								}
-								myReader.close();
-								if (Arrays.equals(buf, new byte[] { 0, 0, 0, 0 })) {
-									myWriter = new FileWriter("src/account.txt", true);
-									myWriter.write(acc + " " + pass + "\n");
-									myWriter.close();
-									ByteBuffer.wrap(buf, 0, 4).putInt(2);
-								}
-								out.write(buf);
-
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							}
-
-							PlayName = acc;
-							break;
-						case 1: // create
-							mode = -1;
-							System.out.println(PlayName + " create");
-							String roomName = data.trim();
-							buf = new byte[4];
-							boolean exist = false;
-							for (RoomType r : room) {
-								if (r.RoomName.equals(roomName)) {
-									exist = true;
-									break;
-								}
-							}
-							if (!exist) {
-								room.add(new RoomType(roomName, PlayName, sc, ThreadName));
-								ByteBuffer.wrap(buf, 0, 4).putInt(1);
-							} else {
-								ByteBuffer.wrap(buf, 0, 4).putInt(-1);
-							}
-							out.write(buf);
-							break;
-						case 2: // join
-							mode = -1;
-							buf = new byte[4];
-							roomName = data.trim();
-							for (RoomType r : room) {
-								if (r.RoomName.equals(roomName)) {
-									if (!r.play) {
-										r.P2_name = this.PlayName;
-										r.P2 = this.sc;
-										r.play = true;
-										ByteBuffer.wrap(buf, 0, 4).putInt(1);
-										out.write(buf);
-
-										// send to P1
-										r.P1.getOutputStream().write(buf);
-										r.P1.getOutputStream().flush();
-
-										Game game = new Game(r.RoomName, r.P1, r.P2);
-										game.start();
+									myReader.close();
+									if (Arrays.equals(buf, new byte[] { 0, 0, 0, 0 })) {
+										myWriter = new FileWriter("src/account.txt", true);
+										myWriter.write(acc + " " + pass + "\n");
+										myWriter.close();
+										ByteBuffer.wrap(buf, 0, 4).putInt(2);
 									}
+									out.write(buf);
+
+								} catch (FileNotFoundException e) {
+									e.printStackTrace();
+								}
+
+								PlayName = acc;
+								break;
+							case 1: // create
+								mode = -1;
+								System.out.println(PlayName + " create");
+								String roomName = data.trim();
+								buf = new byte[4];
+								boolean exist = false;
+								for (RoomType r : room) {
+									if (r.RoomName.equals(roomName)) {
+										exist = true;
+										break;
+									}
+								}
+								if (!exist) {
+									room.add(new RoomType(roomName, PlayName, sc, ThreadName));
+									ByteBuffer.wrap(buf, 0, 4).putInt(1);
 								} else {
-									ByteBuffer.wrap(buf, 0, 4).putInt(0, 0);
+									ByteBuffer.wrap(buf, 0, 4).putInt(-1);
+								}
+								play = true;
+								out.write(buf);
+								break;
+							case 2: // join
+								mode = -1;
+								buf = new byte[4];
+								roomName = data.trim();
+								for (RoomType r : room) {
+									if (r.RoomName.equals(roomName)) {
+										if (!r.play) {
+											r.P2_name = this.PlayName;
+											r.P2 = this.sc;
+											r.play = true;
+											ByteBuffer.wrap(buf, 0, 4).putInt(1);
+											out.write(buf);
+
+											// send to P1
+											r.P1.getOutputStream().write(buf);
+											r.P1.getOutputStream().flush();
+											play = true;
+											Game game = new Game(r.RoomName, r.P1, r.P2);
+											game.start();
+										}
+									} else {
+										ByteBuffer.wrap(buf, 0, 4).putInt(0, 0);
+										out.write(buf);
+									}
+								}
+								break;
+							case 3: // refresh
+								mode = -1;
+								buf = new byte[4];
+								ByteBuffer.wrap(buf, 0, 4).putInt(0, room.size());
+								out.write(buf);
+								for (RoomType r : room) {
+									Thread.sleep(20); // avoid client receiving many rooms in one read()
+									buf = r.RoomName.getBytes();
 									out.write(buf);
 								}
-							}
-							break;
-						case 3: // refresh
-							mode = -1;
-							buf = new byte[4];
-							ByteBuffer.wrap(buf, 0, 4).putInt(0, room.size());
-							out.write(buf);
-							for (RoomType r : room) {
-								Thread.sleep(20); // avoid client receiving many rooms in one read()
-								buf = r.RoomName.getBytes();
-								out.write(buf);
-							}
-							break;
-						case 4: // exit
-							mode = -1;
-							room.removeIf(r -> r.owner == ThreadName);
-							break;
+								break;
+							case 4: // exit
+								mode = -1;
+								room.removeIf(r -> r.owner == ThreadName);
+								play = false;
+								break;
+						}
 					}
 				}
 				in.close();
