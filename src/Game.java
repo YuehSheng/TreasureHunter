@@ -155,6 +155,7 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
+                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         break;
@@ -168,6 +169,7 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
+                            wait_counter[(turn_counter + 1) % 2]--;
                             order = "wait";
                         }
                         break;
