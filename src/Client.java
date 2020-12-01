@@ -592,6 +592,9 @@ public class Client
 			Dig.setBounds(1000, height / 5*4, 200, 50);
 			JLabel digMsg =  new JLabel("Dig the place below player");
 			digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
+
+			/*function*/
+
 			Move.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					map_enable(true);
@@ -627,20 +630,18 @@ public class Client
 					b.add(button);
 					button.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String[] target = e.getSource().toString().split(",");
+							String[] target = e.getSource().toString().split(",");//get position from e.getSource()
 							land.setText(target[1] + " " + target[2]);
-							x = ((Integer.parseInt(target[1]))-60)/20;
+							x = ((Integer.parseInt(target[1]))-60)/20;//get land x,y
 							y = (Integer.parseInt(target[2])-60)/20;
 							System.out.println(x+" "+y);
 							for (JButton button : b) {
-								game.remove(button);
-
-								int bx = button.getX();
+								int bx = button.getX();  /*get buttons' position and set their background color*/
 								int by = button.getY();
-								if (bx == x && by == y) {
+								if (bx == x && by == y) { //land spot
 									button.setBackground(new Color(0, 150, 240));
 								}
-								else if(Math.abs(x-bx) < sight*20){
+								else if(Math.abs(x-bx) < sight*20){			//default sight == 2, can increase or decrease
 									if(Math.abs(y-by) < sight*20)
 										button.setBackground(new Color(200, 200, 200));
 									else
@@ -658,7 +659,7 @@ public class Client
 							Move.setEnabled(false);
 							Props.setEnabled(false);
 							Dig.setEnabled(false);
-							Search.setEnabled(false);
+							Search.setEnabled(false);//disable
 						}
 					});
 				}
@@ -683,18 +684,22 @@ public class Client
 			Props.setEnabled(false);
 			Dig.setEnabled(false);
 			Search.setEnabled(false);
+
+
+
+			/*start to get server's order*/
 			while (true){
 				byte[] buf = new byte[4];
-				in.read(buf);
+				in.read(buf);  		//read order
 				String str = new String(buf).trim();
 				System.out.println(str);
 				if(str.equals("run")){
 					map = new byte[42*42];
-					in.read(map);
+					in.read(map); //read map
 					Move.setEnabled(true);
 					Props.setEnabled(true);
 					Dig.setEnabled(true);
-					Search.setEnabled(true);
+					Search.setEnabled(true);  //set enable to click
 				}
 				else if(str.equals("stop")){
 
