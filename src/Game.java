@@ -203,8 +203,6 @@ public class Game extends Thread {
         } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }
