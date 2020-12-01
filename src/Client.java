@@ -28,6 +28,7 @@ public class Client
 	static boolean match = false;
 	static boolean wait = false;
 	static int sight = 3;
+	static boolean running = false;
 	static byte[] map;
 	static int x = -1,y = -1;
 	static String acc;
@@ -59,6 +60,7 @@ public class Client
 		byte[] b = new byte[4];
 		ByteBuffer.wrap(b).putInt(0,mode);
 		out.write(b);
+		out.flush();
 		out.write("1".getBytes());
 	}
 
@@ -632,9 +634,8 @@ public class Client
 						public void actionPerformed(ActionEvent e) {
 							String[] target = e.getSource().toString().split(",");//get position from e.getSource()
 							land.setText(target[1] + " " + target[2]);
-							x = ((Integer.parseInt(target[1]))-60)/20;//get land x,y
-							y = (Integer.parseInt(target[2])-60)/20;
-							System.out.println(x+" "+y);
+							x = Integer.parseInt(target[1]);//get land x,y
+							y = Integer.parseInt(target[2]);
 							for (JButton button : b) {
 								int bx = button.getX();  /*get buttons' position and set their background color*/
 								int by = button.getY();
@@ -649,17 +650,17 @@ public class Client
 								}
 								else
 									button.setBackground(new Color(80, 150, 100));
-								button.setEnabled(false);
 							}
 							try {
+								Thread.sleep(200);
+								x = (x-60)/20;
+								y = (y-60)/20;
+								System.out.println(x+" "+y);
 								send(10,x+" "+y);
-							} catch (IOException ex) {
+							} catch (IOException | InterruptedException ex) {
 								ex.printStackTrace();
 							}
-							Move.setEnabled(false);
-							Props.setEnabled(false);
-							Dig.setEnabled(false);
-							Search.setEnabled(false);//disable
+							running = false;
 						}
 					});
 				}
@@ -689,28 +690,39 @@ public class Client
 
 			/*start to get server's order*/
 			while (true){
-				byte[] buf = new byte[4];
-				in.read(buf);  		//read order
-				String str = new String(buf).trim();
-				System.out.println(str);
-				if(str.equals("run")){
-					map = new byte[42*42];
-					in.read(map); //read map
-					Move.setEnabled(true);
-					Props.setEnabled(true);
-					Dig.setEnabled(true);
-					Search.setEnabled(true);  //set enable to click
+				if(running){
+					Thread.sleep(200);
 				}
-				else if(str.equals("stop")){
+				else{
+					for(JButton button:b){
+						button.setEnabled(false);
+					}
+					Move.setEnabled(false);
+					Props.setEnabled(false);
+					Dig.setEnabled(false);
+					Search.setEnabled(false);//disable
 
-				}
-				else if(str.equals("win")){
-					break;
-				}
-			}
 
-			if(false){
-				sc.close();
+					byte[] buf = new byte[4];
+					in.read(buf);  		//read order
+					String str = new String(buf).trim();
+					System.out.println(str);
+					if(str.equals("run")){
+						map = new byte[42*42];
+						in.read(map); //read map
+						running = true;
+						Move.setEnabled(true);
+						Props.setEnabled(true);
+						Dig.setEnabled(true);
+						Search.setEnabled(true);  //set enable to click
+					}
+					else if(str.equals("stop")){
+
+					}
+					else if(str.equals("win")){
+						break;
+					}
+				}
 			}
 		}
 		catch(Exception e)

@@ -139,6 +139,7 @@ public class Game extends Thread {
                 client_mode = new byte[4];
                 client_action = new byte[100];
                 out[turn_counter].write(order.getBytes());
+                out[turn_counter].flush();
                 Thread.sleep(20);
                 out[turn_counter].write(map);
                 in[turn_counter].read(client_mode);
@@ -199,7 +200,7 @@ public class Game extends Thread {
 
                 turn_counter = (turn_counter + 1) % 2;
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
             e.printStackTrace();
         } catch (InterruptedException e) {
