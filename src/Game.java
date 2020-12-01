@@ -139,7 +139,8 @@ public class Game extends Thread {
         try {
             while (!win) {
                 out[turn_counter].write(order.getBytes());
-
+                out[turn_counter].flush();
+                Thread.sleep(200);
                 out[turn_counter].write(map);
                 in[turn_counter].read(client_mode);
                 System.out.println("get mode" + ByteBuffer.wrap(client_mode).getInt());
@@ -199,7 +200,7 @@ public class Game extends Thread {
 
                 turn_counter = (turn_counter + 1) % 2;
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
             e.printStackTrace();
         }
