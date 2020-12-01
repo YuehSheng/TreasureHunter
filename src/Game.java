@@ -1,9 +1,7 @@
 import java.io.*;
-import java.lang.ProcessBuilder.Redirect.Type;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.Random;
 
 public class Game extends Thread {
     int P1 = 0;
@@ -138,8 +136,10 @@ public class Game extends Thread {
         createMap();
         try {
             while (!win) {
+                client_mode = new byte[4];
+                client_action = new byte[100];
                 out[turn_counter].write(order.getBytes());
-
+                Thread.sleep(20);
                 out[turn_counter].write(map);
                 in[turn_counter].read(client_mode);
                 System.out.println("get mode" + ByteBuffer.wrap(client_mode).getInt());
@@ -201,6 +201,8 @@ public class Game extends Thread {
             }
         } catch (IOException e) {
             // if someone out should send server to delete this room
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
