@@ -643,8 +643,17 @@ public class Client
 									button.setBackground(new Color(0, 150, 240));
 								}
 								else if(Math.abs(x-bx) < sight*20){			//default sight == 2, can increase or decrease
-									if(Math.abs(y-by) < sight*20)
-										button.setBackground(new Color(200, 200, 200));
+									if(Math.abs(y-by) < sight*20) {
+										bx = (bx - 60)/20;
+										by = (by - 60)/20;
+										if(map[by*42 + bx] == (byte) 2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
+											button.setBackground(new Color(200, 170, 20));
+										}
+										else{
+											button.setBackground(new Color(200, 200, 200));
+										}
+
+									}
 									else
 										button.setBackground(new Color(80, 150, 100));
 								}

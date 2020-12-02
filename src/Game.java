@@ -31,38 +31,27 @@ public class Game extends Thread {
             }
         }
         HashSet<Integer> randPos = new HashSet<>();
-        while (randPos.size() < 13) {
+        while (randPos.size() < 50) {
             randPos.add((int) (Math.random() * 42 * 42));
         }
         Object[] itemPos = randPos.toArray();
-        for (int i = 0; i < 13; i++) {
+
+        map[42 * ((Integer) itemPos[0] % 42) + (Integer)itemPos[0] / 42] = (byte) (Item.treasure.ordinal() & 0xff);
+        for (int i = 1; i < 50; i++) {
             int x = (Integer) itemPos[i] / 42;
             int y = (Integer) itemPos[i] % 42;
             System.out.println(x + " " + y);
-            switch (i) {
-                case 0:
-                    map[42 * y + x] = (byte) (Item.treasure.ordinal() & 0xff);
-                    break;
-                case 1:
-                case 2:
-                case 3:
-                    map[42 * y + x] = (byte) (Item.arrow.ordinal() & 0xff);
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    map[42 * y + x] = (byte) (Item.wall.ordinal() & 0xff);
-                    break;
-                case 7:
-                case 8:
-                case 9:
-                    map[42 * y + x] = (byte) (Item.increase.ordinal() & 0xff);
-                    break;
-                case 10:
-                case 11:
-                case 12:
-                    map[42 * y + x] = (byte) (Item.decrease.ordinal() & 0xff);
-                    break;
+            if(i % 4 == 0){
+                map[42 * y + x] = (byte) (Item.arrow.ordinal() & 0xff);
+            }
+            else if(i % 4 == 1){
+                map[42 * y + x] = (byte) (Item.wall.ordinal() & 0xff);
+            }
+            else if(i % 4 == 2){
+                map[42 * y + x] = (byte) (Item.increase.ordinal() & 0xff);
+            }
+            else {
+                map[42 * y + x] = (byte) (Item.decrease.ordinal() & 0xff);
             }
         }
     }
