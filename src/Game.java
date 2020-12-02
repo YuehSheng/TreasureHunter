@@ -158,7 +158,7 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            order = "wait";
+                            order = "wait1";
                         }
                         byte[] buf = new byte[]{0,0,0,1};
                         out[turn_counter].write(buf);
@@ -179,28 +179,35 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            order = "wait";
+                            order = "wait1";
                         }
                         break;
                     case 12: // props
                         // read item number
                         // use which item and change order and wait_counter to next player
                         // arrow = 0, wall = 1, increase = 2, decrease = 3
-
+                        // message : wait1 = wait 1 turn, wait2 = wait 2 turn,
+                        //           defense = your wall defense arrow, decrease = your sight decrease
                         int item = ByteBuffer.wrap(client_action,0,4).getInt();
-                        String item_message;
-                        if(item == 0){ //arrow
-                            if(!wall_defense[(turn_counter+1)%2]){
-                                order = "wait";
+                        if(item == 0){ // arrow
+                            if(!wall_defense[(turn_counter+1)%2]){ // don't have wall
                                 wait_counter[(turn_counter+1)%2] = 2;
-                                wall_defense[(turn_counter+1)%2] = false;
+                                order = "wait2";
                             }
                             else {
                                 order = "defense";
+                                wall_defense[(turn_counter+1)%2] = false;
                             }
                         }
-                        else if(item == 1){
+                        else if(item == 1){ // wall
                             wall_defense[turn_counter] = true;
+                            order = "run";
+                        }
+                        else if(item == 2){
+                            order = "run"; // client process
+                        }
+                        else if(item == 3){
+                            order = "decrease";
                         }
                         break;
                     case 13: // dig
@@ -212,7 +219,7 @@ public class Game extends Thread {
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
-                            order = "wait";
+                            order = "wait1";
                         }
                         break;
                 }
