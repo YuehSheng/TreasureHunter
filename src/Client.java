@@ -641,7 +641,7 @@ public class Client
 						}
 						land.setVisible(true);
 						land.setText(str);
-
+						running = false;
 					} catch (IOException ioException) {
 						ioException.printStackTrace();
 					}
