@@ -27,6 +27,7 @@ public class Client
 	static boolean login = false;
 	static boolean match = false;
 	static boolean wait = false;
+	static boolean near = false;
 	static int sight = 3;
 	static boolean running = false;
 	static byte[] map;
@@ -388,7 +389,7 @@ public class Client
 						int result = ByteBuffer.wrap(send(0,data)).getInt(0);
 						System.out.println(result);
 						if(result == 1 ||result == 2){
-						  acc = account;
+							acc = account;
 							login = true;
 						}
 						else{
@@ -675,12 +676,13 @@ public class Client
 
 
 			JFrame alert = new JFrame("Alert");
-			alert.setVisible(false);
-			alert.setSize(200,200);
+//			alert.setVisible(false);
+			alert.setLayout(null);
+			alert.setSize(275,200);
 			alert.setLocationRelativeTo(game);
 			alert.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 			JLabel alertMsg = new JLabel("Treasure is in your sight!");
-			alertMsg.setBounds(50,20,150,40);
+			alertMsg.setBounds(50,50,150,50);
 			alert.add(alertMsg);
 
 			/*set map*/
@@ -697,27 +699,34 @@ public class Client
 //							land.setText(target[1] + " " + target[2]);
 							x = Integer.parseInt(target[1]);//get land x,y
 							y = Integer.parseInt(target[2]);
-							boolean near = false;
+							x = (x - 60)/20;
+							y = (y - 60)/20;
 							for (JButton button : b) {
 								int bx = button.getX();  /*get buttons' position and set their background color*/
 								int by = button.getY();
+								bx = (bx - 60)/20;
+								by = (by - 60)/20;
 								if (bx == x && by == y) { //land spot
 									button.setBackground(new Color(0, 150, 240));
-									/*if(map[42*y + x] == (byte)1)
-										near = true;*/
+									if(map[42*by + bx] == (byte)1){
+										near = true;
+										System.out.println("near");
+									}
 								}
-								else if(Math.abs(x-bx) < sight*20){			//default sight == 2, can increase or decrease
-									if(Math.abs(y-by) < sight*20) { //inside the area
-										bx = (bx - 60)/20;
-										by = (by - 60)/20;
-										if(map[by*42 + bx] == (byte) 2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
+								else if(Math.abs(x-bx) < sight){			//default sight == 2, can increase or decrease
+									if(Math.abs(y-by) < sight) { //inside the area
+										if(map[by*42 + bx] == (byte)1){
+											near = true;
+											System.out.println("near");
+										}
+
+										if(map[by*42 + bx] == (byte)2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
 											button.setBackground(new Color(200, 170, 20));
 										}
 										else{
 											button.setBackground(new Color(200, 200, 200));
 										}
-										/*if(map[42*y + x] == (byte)1)
-											near = true;*/
+
 									}
 									else
 										button.setBackground(new Color(80, 150, 100));
@@ -726,16 +735,7 @@ public class Client
 									button.setBackground(new Color(80, 150, 100));
 							}
 
-							/*if(near){
-								alert.setVisible(true);
-							}
-							else{
-								alert.setVisible(false);
-							}*/
-
 							try {
-								x = (x-60)/20;
-								y = (y-60)/20;
 								System.out.println(x+" "+y);
 								send(10,x+" "+y);
 							} catch (IOException  ex) {
@@ -768,7 +768,6 @@ public class Client
 			Search.setEnabled(false);
 			turn.setVisible(false);
 
-
 			/*start to get server's order*/
 			while (true){
 				if(running){
@@ -778,7 +777,6 @@ public class Client
 					for(JButton button:b){
 						button.setEnabled(false);
 					}
-					alert.setVisible(false);
 					Move.setEnabled(false);
 					Props.setEnabled(false);
 					Dig.setEnabled(false);
@@ -789,6 +787,15 @@ public class Client
 					in.read(buf);  		//read order
 					String str = new String(buf).trim();
 					System.out.println(str);
+
+					if(near){
+						alert.setEnabled(true);
+						alert.setVisible(true);
+					}
+					else{
+						alert.setVisible(false);
+					}
+
 					if(str.equals("run")){
 						turn.setText("Your turn");
 						map = new byte[42*42];
@@ -808,6 +815,7 @@ public class Client
 					else if(str.equals("win")){
 						break;
 					}
+					near = false;
 				}
 			}
 		}
