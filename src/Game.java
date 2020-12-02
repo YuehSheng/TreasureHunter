@@ -235,11 +235,11 @@ public class Game extends Thread {
                             ByteBuffer.wrap(buf,0,4).putInt(0);
                             out[turn_counter].write(buf);
                             System.out.println("not");
-                        }
-                        if (wait_counter[(turn_counter + 1) % 2] == 0) {
-                            order = "run";
-                        } else {
-                            order = "wait1";
+                            if (wait_counter[(turn_counter + 1) % 2] == 0) {
+                                order = "run";
+                            } else {
+                                order = "wait1";
+                            }
                         }
                         break;
                     case 14: // wait : if order is stop client should send 'wait' back
