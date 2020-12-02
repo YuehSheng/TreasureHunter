@@ -15,6 +15,7 @@ public class Game extends Thread {
     Socket[] Play = new Socket[2];
     InputStream[] in = new InputStream[2];
     OutputStream[] out = new OutputStream[2];
+    int[] treasurePos = {-1,-1};
     boolean win = false;
     String order = null;
     int[] pos_x = new int[2]; // player1 and player2 position
@@ -36,7 +37,9 @@ public class Game extends Thread {
         }
         Object[] itemPos = randPos.toArray();
         System.out.println((Integer) itemPos[0] % 42 + " " + (Integer)itemPos[0] / 42);
-        map[42 * ((Integer) itemPos[0] % 42) + (Integer)itemPos[0] / 42] = (byte) (Item.treasure.ordinal() & 0xff);
+        map[42 * ((Integer)itemPos[0] % 42) + (Integer)itemPos[0] / 42] = (byte) (Item.treasure.ordinal() & 0xff);
+        treasurePos[0] = (Integer)itemPos[0] % 42;
+        treasurePos[1] = (Integer)itemPos[0] / 42;
         for (int i = 1; i < 50; i++) {
             int x = (Integer) itemPos[i] / 42;
             int y = (Integer) itemPos[i] % 42;
@@ -71,20 +74,11 @@ public class Game extends Thread {
     }
 
     public int find_direction(int x, int y) {
-        int treasure_x = 0;
-        int treasure_y = 0;
         int dirX = 0;
         int dirY = 0;
         int direction;
-        for (int i = 0; i < 42 * 42; i++) {
-            if (map[i] == (byte) (Item.treasure.ordinal() & 0xff)) {
-                treasure_y = i / 42;
-                treasure_x = i % 42;
-                break;
-            }
-        }
-        dirX = x - treasure_x;
-        dirY = y - treasure_y;
+        dirX = x - treasurePos[0];
+        dirY = y - treasurePos[1];
         if (dirX == 0) {
             if (dirY == 0) {
                 direction = 0; // "ground"
@@ -205,7 +199,23 @@ public class Game extends Thread {
                         break;
                     case 13: // dig
                         // read dig position
-
+                        pos = new String(client_action).trim();
+                        s = pos.split(" ");
+                        x = Integer.parseInt(s[0]);
+                        y = Integer.parseInt(s[1]);
+                        System.out.println(x + " " + y);
+                        buf = new byte[4];
+                        if(x == treasurePos[0] && y == treasurePos[1]){
+                            ByteBuffer.wrap(buf,0,4).putInt(1);
+                            out[turn_counter].write(buf);
+                            order = "win";
+                            System.out.println("win");
+                        }
+                        else{
+                            ByteBuffer.wrap(buf,0,4).putInt(0);
+                            out[turn_counter].write(buf);
+                            System.out.println("not");
+                        }
                         break;
                     case 14: // wait : if order is stop client should send 'wait' back
                         wait_counter[turn_counter]--;

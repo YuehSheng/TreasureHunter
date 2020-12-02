@@ -372,7 +372,7 @@ public class Client
 			error.add(msg3);
 			error.add(ok);
 			error.setLayout(null);
-			error.setLocationRelativeTo(null);
+			error.setLocationRelativeTo(f);
 			error.setVisible(false);
 
 			login_b.addActionListener(new ActionListener() {
@@ -579,7 +579,7 @@ public class Client
 			game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			JLabel land =  new JLabel("Choose a spot to land");
 			land.setBounds(width/2-110,30, 150,20);
-			JLabel turn =  new JLabel("Your turn");
+			JLabel turn =  new JLabel("");
 			turn.setBounds(1000,30, 150,20);
 			JButton Move = new JButton("Move");
 			JButton Search = new JButton("Search");
@@ -651,7 +651,19 @@ public class Client
 			Dig.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					/*dig the place below player*/
-
+					try {
+						byte[] buf = send(13,x+" "+y);
+						int result = ByteBuffer.wrap(buf,0,4).getInt();
+						if(result == 1){
+							land.setText("You Win!!");
+						}
+						else{
+							land.setText("Not this position");
+						}
+						running = false;
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 
@@ -661,6 +673,17 @@ public class Client
 				}
 			});
 
+
+			JFrame alert = new JFrame("Alert");
+			alert.setVisible(false);
+			alert.setSize(200,200);
+			alert.setLocationRelativeTo(game);
+			alert.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			JLabel alertMsg = new JLabel("Treasure is in your sight!");
+			alertMsg.setBounds(50,20,150,40);
+			alert.add(alertMsg);
+
+			/*set map*/
 			for(int j = 60;j < height-100;j+=20) {
 				for (int i = 60; i < width - 400; i += 20) {
 					JButton button = new JButton();
@@ -674,14 +697,17 @@ public class Client
 //							land.setText(target[1] + " " + target[2]);
 							x = Integer.parseInt(target[1]);//get land x,y
 							y = Integer.parseInt(target[2]);
+							boolean near = false;
 							for (JButton button : b) {
 								int bx = button.getX();  /*get buttons' position and set their background color*/
 								int by = button.getY();
 								if (bx == x && by == y) { //land spot
 									button.setBackground(new Color(0, 150, 240));
+									/*if(map[42*y + x] == (byte)1)
+										near = true;*/
 								}
 								else if(Math.abs(x-bx) < sight*20){			//default sight == 2, can increase or decrease
-									if(Math.abs(y-by) < sight*20) {
+									if(Math.abs(y-by) < sight*20) { //inside the area
 										bx = (bx - 60)/20;
 										by = (by - 60)/20;
 										if(map[by*42 + bx] == (byte) 2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
@@ -690,7 +716,8 @@ public class Client
 										else{
 											button.setBackground(new Color(200, 200, 200));
 										}
-
+										/*if(map[42*y + x] == (byte)1)
+											near = true;*/
 									}
 									else
 										button.setBackground(new Color(80, 150, 100));
@@ -698,13 +725,20 @@ public class Client
 								else
 									button.setBackground(new Color(80, 150, 100));
 							}
+
+							/*if(near){
+								alert.setVisible(true);
+							}
+							else{
+								alert.setVisible(false);
+							}*/
+
 							try {
-								Thread.sleep(200);
 								x = (x-60)/20;
 								y = (y-60)/20;
 								System.out.println(x+" "+y);
 								send(10,x+" "+y);
-							} catch (IOException | InterruptedException ex) {
+							} catch (IOException  ex) {
 								ex.printStackTrace();
 							}
 							running = false;
@@ -744,17 +778,19 @@ public class Client
 					for(JButton button:b){
 						button.setEnabled(false);
 					}
+					alert.setVisible(false);
 					Move.setEnabled(false);
 					Props.setEnabled(false);
 					Dig.setEnabled(false);
 					Search.setEnabled(false);//disable
-
+					turn.setText("Not your turn");
 
 					byte[] buf = new byte[4];
 					in.read(buf);  		//read order
 					String str = new String(buf).trim();
 					System.out.println(str);
 					if(str.equals("run")){
+						turn.setText("Your turn");
 						map = new byte[42*42];
 						in.read(map); //read map
 						running = true;
