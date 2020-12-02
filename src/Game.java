@@ -8,7 +8,7 @@ public class Game extends Thread {
     int P2 = 1;
 
     public enum Item { // mix with item type
-        nothing, treasure, arrow, wall, increase, decrease // props*3 treasure*1
+        nothing, treasure, arrow, wall, increase, decrease, PLAYER1, PLAYER2 // props*3 treasure*1
     }
 
     String Roomname;
@@ -70,12 +70,12 @@ public class Game extends Thread {
         }
     }
 
-    public String find_direction(int x, int y) {
+    public int find_direction(int x, int y) {
         int treasure_x = 0;
         int treasure_y = 0;
         int dirX = 0;
         int dirY = 0;
-        String direction;
+        int direction;
         for (int i = 0; i < 42 * 42; i++) {
             if (map[i] == (byte) (Item.treasure.ordinal() & 0xff)) {
                 treasure_y = i / 42;
@@ -87,27 +87,27 @@ public class Game extends Thread {
         dirY = y - treasure_y;
         if (dirX == 0) {
             if (dirY == 0) {
-                direction = "ground";
+                direction = 0; // "ground"
             } else if (dirY > 0) {
-                direction = "north";
+                direction = 1; // "north"
             } else {
-                direction = "south";
+                direction = 2; // "south"
             }
         } else if (dirX > 0) {
             if (dirY == 0) {
-                direction = "west";
+                direction = 3; // "west"
             } else if (dirY > 0) {
-                direction = "Northwest";
+                direction = 4; // "Northwest"
             } else {
-                direction = "Southwest";
+                direction = 5; // "Southwest"
             }
         } else {
             if (dirY == 0) {
-                direction = "east";
+                direction = 6; // "east"
             } else if (dirY > 0) {
-                direction = "Northeast";
+                direction = 7; // "Northeast"
             } else {
-                direction = "Southeast";
+                direction = 8; // "Southeast"
             }
         }
         return direction;
@@ -121,7 +121,7 @@ public class Game extends Thread {
         int mode = 0;
         byte[] client_mode = new byte[4];
         byte[] client_action = new byte[100];
-        order = "run";// run, stop, win
+        order = "run";// run, stop, decrease, win
         createMap();
         try {
             while (!win) {
@@ -146,7 +146,12 @@ public class Game extends Thread {
                         int x = Integer.parseInt(s[0]);
                         int y = Integer.parseInt(s[1]);
                         System.out.println(x + " " + y);
-                        map[42 * y + x] = (byte) (Item.nothing.ordinal() & 0xff);
+                        if(turn_counter == 0){
+                            map[42 * y + x] = (byte) (Item.PLAYER1.ordinal() & 0xff);
+                        }else{
+                            map[42 * y + x] = (byte) (Item.PLAYER2.ordinal() & 0xff);
+                        }
+
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
@@ -158,10 +163,16 @@ public class Game extends Thread {
                     case 11: // search
                         // read position
                         // send direction
-                        x = ByteBuffer.wrap(client_action, 0, 4).getInt();
-                        y = ByteBuffer.wrap(client_action, 4, 4).getInt();
-                        String direction = find_direction(x, y);
-                        out[turn_counter].write(direction.getBytes()); // send direction
+                        // message 0 = ground, 1 = north, 2 = south, 3 = west, 4 = Northwest
+                        // 5 = Southwest, 6 = east, 7 = Northeast, 8 = Southeast
+                        pos = new String(client_action).trim();
+                        s = pos.split(" ");
+                        x = Integer.parseInt(s[0]);
+                        y = Integer.parseInt(s[1]);
+                        System.out.println(x + " " + y);
+                        int direction = find_direction(x, y);
+                        byte[] Dirbuf = new byte[4];
+                        out[turn_counter].write(ByteBuffer.wrap(Dirbuf).putInt(direction).array()); // send direction
                         if (wait_counter[(turn_counter + 1) % 2] == 0) {
                             order = "run";
                         } else {
@@ -171,7 +182,12 @@ public class Game extends Thread {
                     case 12: // props
                         // read item number
                         // use which item and change order and wait_counter to next player
-
+                        // arrow = 0, wall = 1, increase = 2, decrease = 3
+                        int item = ByteBuffer.wrap(client_action,0,4).getInt();
+                        String item_message;
+                        if(item == 0){ //arrow
+                            item_message = "you hit by arrow";
+                        }
                         break;
                     case 13: // dig
                         // read dig position
