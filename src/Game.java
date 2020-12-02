@@ -35,7 +35,7 @@ public class Game extends Thread {
             randPos.add((int) (Math.random() * 42 * 42));
         }
         Object[] itemPos = randPos.toArray();
-
+        System.out.println((Integer) itemPos[0] % 42 + " " + (Integer)itemPos[0] / 42);
         map[42 * ((Integer) itemPos[0] % 42) + (Integer)itemPos[0] / 42] = (byte) (Item.treasure.ordinal() & 0xff);
         for (int i = 1; i < 50; i++) {
             int x = (Integer) itemPos[i] / 42;
