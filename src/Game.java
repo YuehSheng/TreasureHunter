@@ -143,7 +143,12 @@ public class Game extends Thread {
                         int x = Integer.parseInt(s[0]);
                         int y = Integer.parseInt(s[1]);
                         System.out.println(x + " " + y);
-                        if(turn_counter == 0){
+
+                        //clear last move
+                        map[42 * pos_y[turn_counter] + pos_x[turn_counter]] = (byte) (Item.nothing.ordinal() & 0xff);
+                        pos_x[turn_counter] = x;
+                        pos_y[turn_counter] = y;
+                        if(turn_counter == 0){  //new move
                             map[42 * y + x] = (byte) (Item.PLAYER1.ordinal() & 0xff);
                         }else{
                             map[42 * y + x] = (byte) (Item.PLAYER2.ordinal() & 0xff);

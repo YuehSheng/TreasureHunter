@@ -31,7 +31,7 @@ public class Client
 	static int sight = 3;
 	static boolean running = false;
 	static byte[] map;
-	static int x = -1,y = -1;
+	static int x = -3,y = -3;
 	static String acc;
 	static OutputStream out;
 	static InputStream in;
@@ -701,40 +701,6 @@ public class Client
 							y = Integer.parseInt(target[2]);
 							x = (x - 60)/20;
 							y = (y - 60)/20;
-							for (JButton button : b) {
-								int bx = button.getX();  /*get buttons' position and set their background color*/
-								int by = button.getY();
-								bx = (bx - 60)/20;
-								by = (by - 60)/20;
-								if (bx == x && by == y) { //land spot
-									button.setBackground(new Color(0, 150, 240));
-									if(map[42*by + bx] == (byte)1){
-										near = true;
-										System.out.println("near");
-									}
-								}
-								else if(Math.abs(x-bx) < sight){			//default sight == 2, can increase or decrease
-									if(Math.abs(y-by) < sight) { //inside the area
-										if(map[by*42 + bx] == (byte)1){
-											near = true;
-											System.out.println("near");
-										}
-
-										if(map[by*42 + bx] == (byte)2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
-											button.setBackground(new Color(200, 170, 20));
-										}
-										else{
-											button.setBackground(new Color(200, 200, 200));
-										}
-
-									}
-									else
-										button.setBackground(new Color(80, 150, 100));
-								}
-								else
-									button.setBackground(new Color(80, 150, 100));
-							}
-
 							try {
 								System.out.println(x+" "+y);
 								send(10,x+" "+y);
@@ -814,6 +780,42 @@ public class Client
 					}
 					else if(str.equals("win")){
 						break;
+					}
+					for (JButton button : b) {
+						int bx = button.getX();  /*get buttons' position and set their background color*/
+						int by = button.getY();
+						bx = (bx - 60)/20;
+						by = (by - 60)/20;
+						if (bx == x && by == y) { //land spot
+							button.setBackground(new Color(0, 150, 240));
+							if(map[42*by + bx] == (byte)1){
+								near = true;
+								System.out.println("near");
+							}
+						}
+						else if(Math.abs(x-bx) < sight){			//default sight == 2, can increase or decrease
+							if(Math.abs(y-by) < sight) { //inside the area
+								if(map[by*42 + bx] == (byte)1){
+									near = true;
+									System.out.println("near");
+								}
+
+								if(map[by*42 + bx] == (byte)2||map[by*42 + bx] == (byte)3||map[by*42 + bx] ==(byte) 4||map[by*42 + bx] == (byte)5){
+									button.setBackground(new Color(200, 170, 20));
+								}
+								else if(map[by*42 + bx] == (byte)6||map[by*42 + bx] == (byte)7){
+									button.setBackground(new Color(200, 70, 20));
+								}
+								else{
+									button.setBackground(new Color(200, 200, 200));
+								}
+
+							}
+							else
+								button.setBackground(new Color(80, 150, 100));
+						}
+						else
+							button.setBackground(new Color(80, 150, 100));
 					}
 					near = false;
 				}
