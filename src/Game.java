@@ -208,6 +208,10 @@ public class Game extends Thread {
                         else if(item == 3){
                             order = "decrease";
                         }
+                        buf = new byte[4];
+                        ByteBuffer.wrap(buf,0,4).putInt(item);
+                        out[turn_counter].write(buf);
+
                         break;
                     case 13: // dig
                         // read dig position
@@ -222,6 +226,10 @@ public class Game extends Thread {
                             out[turn_counter].write(buf);
                             order = "win";
                             System.out.println("win");
+
+                            /*
+                            * out to both side to finish the game
+                            * */
                         }
                         else{
                             ByteBuffer.wrap(buf,0,4).putInt(0);
@@ -243,7 +251,6 @@ public class Game extends Thread {
                         }
                         break;
                 }
-
                 turn_counter = (turn_counter + 1) % 2;
             }
         } catch (IOException | InterruptedException e) {

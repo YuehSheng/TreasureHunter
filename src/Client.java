@@ -701,6 +701,16 @@ public class Client
 							y = Integer.parseInt(target[2]);
 							x = (x - 60)/20;
 							y = (y - 60)/20;
+							for (JButton button :b){
+								int bx = button.getX();  /*get buttons' position and set their background color*/
+								int by = button.getY();
+								bx = (bx - 60)/20;
+								by = (by - 60)/20;
+								if (bx == x && by == y) { //land spot
+									button.setBackground(new Color(0, 150, 240));  //for feedback the player
+									break;
+								}
+							}
 							try {
 								System.out.println(x+" "+y);
 								send(10,x+" "+y);
@@ -775,12 +785,20 @@ public class Client
 							Search.setEnabled(true);  //set enable to click
 						}
 					}
-					else if(str.equals("stop")){
-
+					else if(str.contains("wait")){
+						if(str.indexOf(4) == '1'){
+							land.setText("You still remain one round to unfreeze");
+						}
+						else{
+							land.setText("You was shot by Ashe's arrow, remain two rounds to unfreeze");
+						}
+						send(11,"0 0");
 					}
 					else if(str.equals("win")){
 						break;
 					}
+
+					// refresh map when getting new one
 					for (JButton button : b) {
 						int bx = button.getX();  /*get buttons' position and set their background color*/
 						int by = button.getY();
