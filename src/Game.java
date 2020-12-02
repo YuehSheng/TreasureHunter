@@ -223,6 +223,11 @@ public class Game extends Thread {
                             out[turn_counter].write(buf);
                             System.out.println("not");
                         }
+                        if (wait_counter[(turn_counter + 1) % 2] == 0) {
+                            order = "run";
+                        } else {
+                            order = "wait1";
+                        }
                         break;
                     case 14: // wait : if order is stop client should send 'wait' back
                         wait_counter[turn_counter]--;
