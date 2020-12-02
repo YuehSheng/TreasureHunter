@@ -606,7 +606,45 @@ public class Client
 			Search.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					/*search for treasure*/
+					String data = new String(x+" "+y);
+					try {
+						int result = ByteBuffer.wrap(send(11,data),0,4).getInt();
+						String str = "";
+						switch (result){
+							case 0:
+								str = "ground";
+								break;
+							case 1:
+								str = "north";
+								break;
+							case 2:
+								str = "south";
+								break;
+							case 3:
+								str = "west";
+								break;
+							case 4:
+								str = "Northwest";
+								break;
+							case 5:
+								str = "Southwest";
+								break;
+							case 6:
+								str = "east";
+								break;
+							case 7:
+								str = "Northeast";
+								break;
+							case 8:
+								str = "Southeast";
+								break;
+						}
+						land.setVisible(true);
+						land.setText(str);
 
+					} catch (IOException ioException) {
+						ioException.printStackTrace();
+					}
 				}
 			});
 
@@ -633,7 +671,7 @@ public class Client
 					button.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String[] target = e.getSource().toString().split(",");//get position from e.getSource()
-							land.setText(target[1] + " " + target[2]);
+//							land.setText(target[1] + " " + target[2]);
 							x = Integer.parseInt(target[1]);//get land x,y
 							y = Integer.parseInt(target[2]);
 							for (JButton button : b) {
@@ -694,7 +732,7 @@ public class Client
 			Props.setEnabled(false);
 			Dig.setEnabled(false);
 			Search.setEnabled(false);
-
+			turn.setVisible(false);
 
 
 			/*start to get server's order*/
@@ -720,10 +758,13 @@ public class Client
 						map = new byte[42*42];
 						in.read(map); //read map
 						running = true;
+						turn.setVisible(true);
 						Move.setEnabled(true);
-						Props.setEnabled(true);
-						Dig.setEnabled(true);
-						Search.setEnabled(true);  //set enable to click
+						if(x >=0 &&y >= 0) {
+							Props.setEnabled(true);
+							Dig.setEnabled(true);
+							Search.setEnabled(true);  //set enable to click
+						}
 					}
 					else if(str.equals("stop")){
 
