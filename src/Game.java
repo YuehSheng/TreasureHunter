@@ -118,10 +118,13 @@ public class Game extends Thread {
         int[] wait_counter = new int[2]; // arrow stop counter
         wait_counter[P1] = 0;
         wait_counter[P2] = 0;
+        boolean[] wall_defense = new boolean[2];
+        wall_defense[0] = false;
+        wall_defense[1] = false;
         int mode = 0;
         byte[] client_mode = new byte[4];
         byte[] client_action = new byte[100];
-        order = "run";// run, stop, decrease, win
+        order = "run";// run, wait, decrease, win
         createMap();
         try {
             while (!win) {
@@ -183,10 +186,21 @@ public class Game extends Thread {
                         // read item number
                         // use which item and change order and wait_counter to next player
                         // arrow = 0, wall = 1, increase = 2, decrease = 3
+
                         int item = ByteBuffer.wrap(client_action,0,4).getInt();
                         String item_message;
                         if(item == 0){ //arrow
-                            item_message = "you hit by arrow";
+                            if(!wall_defense[(turn_counter+1)%2]){
+                                order = "wait";
+                                wait_counter[(turn_counter+1)%2] = 2;
+                                wall_defense[(turn_counter+1)%2] = false;
+                            }
+                            else {
+                                order = "defense";
+                            }
+                        }
+                        else if(item == 1){
+                            wall_defense[turn_counter] = true;
                         }
                         break;
                     case 13: // dig
