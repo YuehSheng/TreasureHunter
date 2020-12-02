@@ -764,14 +764,6 @@ public class Client
 					String str = new String(buf).trim();
 					System.out.println(str);
 
-					if(near){
-						alert.setEnabled(true);
-						alert.setVisible(true);
-					}
-					else{
-						alert.setVisible(false);
-					}
-
 					if(str.equals("run")){
 						turn.setText("Your turn");
 						map = new byte[42*42];
@@ -834,6 +826,13 @@ public class Client
 						}
 						else
 							button.setBackground(new Color(80, 150, 100));
+					}
+					if(near){
+						alert.setEnabled(true);
+						alert.setVisible(true);
+					}
+					else{
+						alert.setVisible(false);
 					}
 					near = false;
 				}
