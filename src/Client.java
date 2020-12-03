@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.rmi.*;
 import java.util.*;
 import java.awt.Color;
 
@@ -748,7 +747,24 @@ public class Client
 							}
 							try {
 								System.out.println(x+" "+y);
-								send(10,x+" "+y);
+								byte[] b = send(10,x+" "+y);
+								int item = ByteBuffer.wrap(b,0,4).getInt();
+								switch (item){
+									case 0:    	//nothing
+										break;
+									case 1:			//arrow
+										prop[0]++;
+										break;
+									case 2:			//wall
+										prop[1]++;
+										break;
+									case 3:			//increase
+										prop[2]++;
+										break;
+									case 4:			//decrease
+										prop[3]++;
+										break;
+								}
 							} catch (IOException  ex) {
 								ex.printStackTrace();
 							}

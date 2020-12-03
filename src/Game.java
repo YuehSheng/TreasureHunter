@@ -144,6 +144,23 @@ public class Game extends Thread {
                         int y = Integer.parseInt(s[1]);
                         System.out.println(x + " " + y);
 
+                        byte[] buf = new byte[4]; //return get item
+                        if(map[42*y+x] == (byte) (Item.nothing.ordinal() & 0xff)){
+                            ByteBuffer.wrap(buf,0,4).putInt(0);
+                        }
+                        else if(map[42*y+x] == (byte) (Item.arrow.ordinal() & 0xff)){
+                            ByteBuffer.wrap(buf,0,4).putInt(1);
+                        }
+                        else if(map[42*y+x] == (byte) (Item.wall.ordinal() & 0xff)){
+                            ByteBuffer.wrap(buf,0,4).putInt(2);
+                        }
+                        else if(map[42*y+x] == (byte) (Item.increase.ordinal() & 0xff)){
+                            ByteBuffer.wrap(buf,0,4).putInt(3);
+                        }
+                        else if(map[42*y+x] == (byte) (Item.decrease.ordinal() & 0xff)){
+                            ByteBuffer.wrap(buf,0,4).putInt(4);
+                        }
+
                         //clear last move
                         map[42 * pos_y[turn_counter] + pos_x[turn_counter]] = (byte) (Item.nothing.ordinal() & 0xff);
                         pos_x[turn_counter] = x;
@@ -159,7 +176,7 @@ public class Game extends Thread {
                         } else {
                             order = "wait1";
                         }
-                        byte[] buf = new byte[]{0,0,0,1};
+
                         out[turn_counter].write(buf);
                         break;
                     case 11: // search
