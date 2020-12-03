@@ -32,6 +32,7 @@ public class Client
 	static boolean running = false;
 	static byte[] map;
 	static int x = -3,y = -3;
+	static int[] prop = {0,0,0,0};  // arrow wall increase decrease
 	static String acc;
 	static OutputStream out;
 	static InputStream in;
@@ -78,6 +79,12 @@ public class Client
 			strings.add(str);
 		}
 		return strings;
+	}
+
+	public static boolean useProps(int item) throws IOException {
+		// 0 arrow, 1 wall, 2 increase, 3 decrease
+		send(12,String.valueOf(item));
+		return true;
 	}
 
 	private static void game() throws IOException {
@@ -584,19 +591,31 @@ public class Client
 			turn.setBounds(1000,30, 150,20);
 			JButton Move = new JButton("Move");
 			JButton Search = new JButton("Search");
-			JButton Props = new JButton("Props");
+
 			JButton Dig = new JButton("Dig");
 			Move.setBounds(1000, height / 5, 200, 50);
+
+
 			JLabel searchMsg =  new JLabel("Get roughly direction of treasure");
 			searchMsg.setBounds(1000,height / 5*2 - 40, 200, 50);
-
 			Search.setBounds(1000, height / 5*2, 200, 50);
-			Props.setBounds(1000, height / 5*3, 200, 50);
+
+			JLabel propsMsg =  new JLabel("Props");
+			JButton arrow = new JButton("Arrow");
+			JButton wall = new JButton("Wall");
+			JButton increase = new JButton("Increase");
+			JButton decrease = new JButton("Decrease");
+			arrow.setBounds(905, height / 5*3, 70, 50);
+			wall.setBounds(985, height / 5*3, 70, 50);
+			increase.setBounds(1065, height / 5*3, 100, 50);
+			decrease.setBounds(1175, height / 5*3, 100, 50);
+
 			Dig.setBounds(1000, height / 5*4, 200, 50);
 			JLabel digMsg =  new JLabel("Dig the place below player");
 			digMsg.setBounds(1000,height / 5*4 - 40, 200, 50);
+			digMsg.setBounds(1000,height / 5*3 - 40, 200, 50);
 
-			/*function*/
+			/*button function*/
 
 			Move.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -668,13 +687,29 @@ public class Client
 				}
 			});
 
-			Props.addActionListener(new ActionListener() {
+			/* props */
+			arrow.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					map_enable(false);
+				}
+			});
+			wall.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					map_enable(false);
+				}
+			});
+			increase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					map_enable(false);
+				}
+			});
+			decrease.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					map_enable(false);
 				}
 			});
 
-
+			/* near alert */
 			JFrame alert = new JFrame("Alert");
 //			alert.setVisible(false);
 			alert.setLayout(null);
@@ -731,7 +766,11 @@ public class Client
 			game.add(Move);
 			game.add(Search);
 			game.add(Dig);
-			game.add(Props);
+			game.add(propsMsg);
+			game.add(arrow);
+			game.add(wall);
+			game.add(increase);
+			game.add(decrease);
 			game.add(land);
 			game.add(turn);
 			game.setSize(width,height);
@@ -739,7 +778,10 @@ public class Client
 			game.setLocationRelativeTo(null);
 			game.setVisible(true);
 			Move.setEnabled(false);
-			Props.setEnabled(false);
+			arrow.setEnabled(false);
+			wall.setEnabled(false);
+			increase.setEnabled(false);
+			decrease.setEnabled(false);
 			Dig.setEnabled(false);
 			Search.setEnabled(false);
 			turn.setVisible(false);
@@ -754,7 +796,10 @@ public class Client
 						button.setEnabled(false);
 					}
 					Move.setEnabled(false);
-					Props.setEnabled(false);
+					increase.setEnabled(false);
+					decrease.setEnabled(false);
+					wall.setEnabled(false);
+					arrow.setEnabled(false);
 					Dig.setEnabled(false);
 					Search.setEnabled(false);//disable
 					turn.setText("Not your turn");
@@ -772,10 +817,18 @@ public class Client
 						turn.setVisible(true);
 						Move.setEnabled(true);
 						if(x >=0 &&y >= 0) {
-							Props.setEnabled(true);
 							Dig.setEnabled(true);
 							Search.setEnabled(true);  //set enable to click
 						}
+						if(prop[0] > 0)
+							arrow.setEnabled(true);
+						if(prop[1] > 0)
+							wall.setEnabled(true);
+						if(prop[2] > 0)
+							increase.setEnabled(true);
+						if(prop[3] > 0)
+							decrease.setEnabled(true);
+
 					}
 					else if(str.contains("wait")){
 						if(str.indexOf(4) == '1'){
@@ -819,7 +872,6 @@ public class Client
 								else{
 									button.setBackground(new Color(200, 200, 200));
 								}
-
 							}
 							else
 								button.setBackground(new Color(80, 150, 100));

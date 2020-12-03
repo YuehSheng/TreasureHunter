@@ -187,7 +187,7 @@ public class Game extends Thread {
                         // arrow = 0, wall = 1, increase = 2, decrease = 3
                         // message : wait1 = wait 1 turn, wait2 = wait 2 turn,
                         //           defense = your wall defense arrow, decrease = your sight decrease
-                        int item = ByteBuffer.wrap(client_action,0,4).getInt();
+                        int item = Integer.parseInt(new String(client_action).trim());
                         if(item == 0){ // arrow
                             if(!wall_defense[(turn_counter+1)%2]){ // don't have wall
                                 wait_counter[(turn_counter+1)%2] = 2;
