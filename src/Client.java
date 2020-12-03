@@ -80,10 +80,10 @@ public class Client
 		return strings;
 	}
 
-	public static boolean useProps(int item) throws IOException {
+	public static void useProps(int item) throws IOException {
 		// 0 arrow, 1 wall, 2 increase, 3 decrease
 		send(12,String.valueOf(item));
-		return true;
+		running = false;
 	}
 
 	private static void game() throws IOException {
@@ -689,22 +689,38 @@ public class Client
 			/* props */
 			arrow.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					map_enable(false);
+					try {
+						useProps(0);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 			wall.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					map_enable(false);
+					try {
+						useProps(1);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 			increase.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					map_enable(false);
+					try {
+						useProps(2);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 			decrease.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					map_enable(false);
+					try {
+						useProps(3);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
 				}
 			});
 
@@ -854,6 +870,16 @@ public class Client
 							land.setText("You was shot by Ashe's arrow, remain two rounds to unfreeze");
 						}
 						send(11,"0 0");
+					}
+					else if(str.equals("decrease")){
+						/* need to do */
+
+						break;
+					}
+					else if(str.equals("defense")){
+						/* need to do */
+
+						break;
 					}
 					else if(str.equals("win")){
 						break;
