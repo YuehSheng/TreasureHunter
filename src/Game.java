@@ -145,7 +145,9 @@ public class Game extends Thread {
                         System.out.println(x + " " + y);
 
                         byte[] buf = new byte[4]; //return get item
-                        if(map[42*y+x] == (byte) (Item.nothing.ordinal() & 0xff)){
+                        if(map[42*y+x] == (byte) (Item.nothing.ordinal() & 0xff)||
+                                map[42*y+x] == (byte) (Item.PLAYER1.ordinal() & 0xff)||
+                                        map[42*y+x] == (byte) (Item.PLAYER2.ordinal() & 0xff)){
                             ByteBuffer.wrap(buf,0,4).putInt(0);
                         }
                         else if(map[42*y+x] == (byte) (Item.arrow.ordinal() & 0xff)){
@@ -266,6 +268,9 @@ public class Game extends Thread {
                         } else {
                             order = "wait1";
                         }
+                        buf = new byte[4];
+                        ByteBuffer.wrap(buf,0,4).putInt(0);
+                        out[turn_counter].write(buf);
                         break;
                 }
                 turn_counter = (turn_counter + 1) % 2;

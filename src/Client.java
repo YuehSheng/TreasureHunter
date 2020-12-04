@@ -83,6 +83,10 @@ public class Client
 	public static void useProps(int item) throws IOException {
 		// 0 arrow, 1 wall, 2 increase, 3 decrease
 		send(12,String.valueOf(item));
+		prop[item]--;
+		if(item == 2){
+		  sight += 2;
+    }
 		running = false;
 	}
 
@@ -585,7 +589,7 @@ public class Client
 			game.setVisible(false);
 			game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			JLabel land =  new JLabel("Choose a spot to land");
-			land.setBounds(width/2-110,30, 150,20);
+			land.setBounds(width/2-200,30, 300,20);
 			JLabel turn =  new JLabel("");
 			turn.setBounds(1000,30, 150,20);
 			JButton Move = new JButton("Move");
@@ -841,8 +845,17 @@ public class Client
 					String str = new String(buf).trim();
 					System.out.println(str);
 
-					if(str.equals("run")){
+					if(str.equals("run") || str.equals("decrease") ||str.equals("defense")){
 						turn.setText("Your turn");
+
+            if(str.equals("decrease") && sight > 1){
+              land.setText("Your sight is decreased!");
+              sight--;
+            }
+            else if(str.equals("defense")){
+              land.setText("You defensed an arrow!");
+            }
+
 						map = new byte[42*42];
 						in.read(map); //read map
 						running = true;
@@ -869,17 +882,7 @@ public class Client
 						else{
 							land.setText("You was shot by Ashe's arrow, remain two rounds to unfreeze");
 						}
-						send(11,"0 0");
-					}
-					else if(str.equals("decrease")){
-						/* need to do */
-
-						break;
-					}
-					else if(str.equals("defense")){
-						/* need to do */
-
-						break;
+						send(14,"wait");
 					}
 					else if(str.equals("win")){
 						break;
