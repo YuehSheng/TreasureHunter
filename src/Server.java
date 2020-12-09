@@ -107,7 +107,15 @@ public class Server
 						mode = ByteBuffer.wrap(buf, 0, 4).getInt(); // login = 0,create = 1,join = 2,refresh = 3,back = 4
 						buf = new byte[100];
 						in.read(buf); // read data
-						data = new String(buf);// 0:playname,1:roomname,2:join roomname
+						//delete useless byte to sure string is true
+						int length = 0;
+						for(int i = 0; i < buf.length; i++){
+							if(buf[i] == 0){
+								length = i;
+								break;
+							}
+						}
+						data = new String(buf, 0, length, "UTF-8");// 0:playname,1:roomname,2:join roomname
 						switch (mode) {
 							case 0: // name
 								mode = -1;
@@ -245,7 +253,15 @@ public class Server
 					sc = ssc.accept();
 					in = sc.getInputStream();
 					in.read(buf); //read roomname
-					String Roomname = new String(buf);
+					// delete useless byte to sure string is true
+					int length = 0;
+					for (int i = 0; i < buf.length; i++) {
+						if (buf[i] == 0) {
+							length = i;
+							break;
+						}
+					}
+					String Roomname = new String(buf, 0, length, "UTF-8");
 					for(RoomType r : room){
 						if(r.RoomName.equals(Roomname)){
 							System.out.println(r.RoomName + " is end!");
