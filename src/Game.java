@@ -287,8 +287,16 @@ public class Game extends Thread {
             OutputStream o;
             order = "exit";
             try {
-                out[0].write(order.getBytes());
-                out[1].write(order.getBytes());
+                try {
+                    out[0].write(order.getBytes());
+                } catch (Exception e2) {
+                    System.out.println("P1 exit!");
+                }
+                try {
+                    out[1].write(order.getBytes());
+                } catch (Exception e2) {
+                    System.out.println("P2 exit!");
+                }
                 feeback = new Socket("127.0.0.1",8888);
                 o = feeback.getOutputStream();
                 o.write(Roomname.getBytes());
@@ -297,8 +305,6 @@ public class Game extends Thread {
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-            
-            e.printStackTrace();
         }
         
     }

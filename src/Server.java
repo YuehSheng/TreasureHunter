@@ -248,6 +248,7 @@ public class Server
 					String Roomname = new String(buf);
 					for(RoomType r : room){
 						if(r.RoomName.equals(Roomname)){
+							System.out.println(r.RoomName + " is end!");
 							room.remove(r);
 						}
 					} // close room
