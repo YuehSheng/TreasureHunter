@@ -253,15 +253,7 @@ public class Server
 					sc = ssc.accept();
 					in = sc.getInputStream();
 					in.read(buf); //read roomname
-					// delete useless byte to sure string is true
-					int length = 0;
-					for (int i = 0; i < buf.length; i++) {
-						if (buf[i] == 0) {
-							length = i;
-							break;
-						}
-					}
-					String Roomname = new String(buf, 0, length, "UTF-8");
+					String Roomname = new String(buf).trim();
 					for(RoomType r : room){
 						if(r.RoomName.equals(Roomname)){
 							System.out.println(r.RoomName + " is end!");

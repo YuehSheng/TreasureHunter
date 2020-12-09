@@ -283,7 +283,7 @@ public class Game extends Thread {
             Play[1].close();
         } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
-            Socket feeback;
+            Socket feedback;
             OutputStream o;
             order = "exit";
             try {
@@ -297,11 +297,11 @@ public class Game extends Thread {
                 } catch (Exception e2) {
                     System.out.println("P2 exit!");
                 }
-                feeback = new Socket("127.0.0.1",8888);
-                o = feeback.getOutputStream();
+                feedback = new Socket("127.0.0.1",8888);
+                o = feedback.getOutputStream();
                 o.write(Roomname.getBytes());
                 o.close();
-                feeback.close();
+                feedback.close();
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
