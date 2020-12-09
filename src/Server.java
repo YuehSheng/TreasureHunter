@@ -54,7 +54,8 @@ public class Server
 		try{
 			serverSocket = new ServerSocket(port);
 			System.out.println("Waiting for request ...");
-			
+			Thread Wait_Exit = new Thread(new Wait_Game_Exit());
+			Wait_Exit.start();
 			try{
 				while(true){
 					sc = serverSocket.accept();
@@ -231,4 +232,31 @@ public class Server
 			}
 		}
 	}
+
+	public static class Wait_Game_Exit implements Runnable{
+		ServerSocket ssc;
+		Socket sc;
+		InputStream in;
+		byte[] buf = new byte[100];
+		public void run() {
+			try {
+				ssc = new ServerSocket(8888); //diferent port
+				while(true){
+					sc = ssc.accept();
+					in = sc.getInputStream();
+					in.read(buf); //read roomname
+					String Roomname = new String(buf);
+					for(RoomType r : room){
+						if(r.RoomName.equals(Roomname)){
+							room.remove(r);
+						}
+					} // close room
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 }

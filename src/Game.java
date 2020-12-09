@@ -245,7 +245,7 @@ public class Game extends Thread {
                             out[turn_counter].write(buf);
                             order = "win";
                             System.out.println("win");
-
+                            win = true;
                             /*
                             * out to both side to finish the game
                             * */
@@ -275,9 +275,31 @@ public class Game extends Thread {
                 }
                 turn_counter = (turn_counter + 1) % 2;
             }
+            in[0].close();
+            in[1].close();
+            out[0].close();
+            out[1].close();
+            Play[0].close();
+            Play[1].close();
         } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
+            Socket feeback;
+            OutputStream o;
+            order = "exit";
+            try {
+                out[0].write(order.getBytes());
+                out[1].write(order.getBytes());
+                feeback = new Socket("127.0.0.1",8888);
+                o = feeback.getOutputStream();
+                o.write(Roomname.getBytes());
+                o.close();
+                feeback.close();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            
             e.printStackTrace();
         }
+        
     }
 }
