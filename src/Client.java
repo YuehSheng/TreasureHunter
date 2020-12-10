@@ -634,6 +634,7 @@ public class Client
               send(14,"wait");
             }
             else if(str.equals("win")){
+              land.setText("Enemy victory, You LOSE!!!!");
               break;
             }
             else if(str.equals("exit")){
