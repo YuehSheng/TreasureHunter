@@ -231,6 +231,8 @@ public class Client
           public void actionPerformed(ActionEvent e) {
             JList l = (JList) scrollableList.getViewport().getView();//get new list
             String sel = l.getSelectedValue().toString();
+            if(sel.equals(""))
+              return;
             System.out.println("select "+sel);
             try {
               byte[] buf = send(2,sel);
@@ -264,8 +266,6 @@ public class Client
               int result = ByteBuffer.wrap(buf,0,4).getInt(0);
               if(result == 1){
                 System.out.println("Create success");
-
-
                 JPanel p1 = new JPanel(new BorderLayout());
                 p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
                 JButton button = new JButton("Exit");
@@ -274,7 +274,8 @@ public class Client
                     matchTable.setEnabled(true);
                     waiting.setEnabled(false);
                     waiting.setVisible(false);
-                    matchTable.remove(waiting);
+//                    matchTable.remove(waiting);
+                    wait = false;
                     /*exit*/
                     try {
                       sendMode(4);
@@ -295,6 +296,7 @@ public class Client
 //						System.out.println(in.available());
               }
               else{
+                wait = false;
                 System.out.println("Create fail");
               }
             } catch (IOException ex) {

@@ -170,10 +170,10 @@ public class Server
 								if (!exist) {
 									room.add(new RoomType(roomName, PlayName, sc, ThreadName));
 									ByteBuffer.wrap(buf, 0, 4).putInt(1);
+									play = true;
 								} else {
 									ByteBuffer.wrap(buf, 0, 4).putInt(-1);
 								}
-								play = true;
 								out.write(buf);
 								break;
 							case 2: // join
