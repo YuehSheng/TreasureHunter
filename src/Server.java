@@ -238,6 +238,11 @@ public class Server
 					if(r.owner == ThreadName){
 						if(r.P2_name.equals("")){ //only one
 							room.remove(r);
+							try {
+								sc.close();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
 						}
 					}
 				}
