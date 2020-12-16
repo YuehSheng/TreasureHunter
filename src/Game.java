@@ -295,8 +295,6 @@ public class Game extends Thread {
             in[1].close();
             out[0].close();
             out[1].close();
-            Play[0].close();
-            Play[1].close();
         } catch (IOException | InterruptedException e) {
             // if someone out should send server to delete this room
             Socket feedback;
@@ -310,12 +308,14 @@ public class Game extends Thread {
                     alive_player = 0;
                 } catch (Exception e2) {
                     System.out.println("P1 exit!");
+                    Play[0].close();
                 }
                 try {
                     out[1].write(order.getBytes());
                     alive_player = 1;
                 } catch (Exception e2) {
                     System.out.println("P2 exit!");
+                    Play[1].close();
                 }
                 reopen = new Socket("127.0.0.1", 8889);
                 o = reopen.getOutputStream();

@@ -89,7 +89,6 @@ public class Server
 		Socket sc = null;
 		InputStream in = null;
 		OutputStream out = null;
-		int port = 6666;
 		boolean play = false;
 		boolean end = false;
 		int mode;
@@ -227,7 +226,7 @@ public class Server
 							room.removeIf(r -> r.owner == ThreadName);
 							play = false;
 							break;
-						case 5:
+						case 5: // close match table
 							play = true;
 							break;
 					}
@@ -274,7 +273,7 @@ public class Server
 		}
 	}
 
-	public static class Reopen implements Runnable{
+	public static class Reopen implements Runnable{ // if game end or enemy exit will reopen match table
 		ServerSocket ssc;
 		Socket sc;
 		InputStream in;
