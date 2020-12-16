@@ -239,6 +239,7 @@ public class Server
 				}
 			} 
 			catch (IOException | InterruptedException e) {
+				System.err.println(e);
 				System.out.println("P"+this.ThreadName + " out");
 				for (RoomType r : room){
 					if(r.owner == ThreadName){

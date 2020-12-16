@@ -256,7 +256,11 @@ public class Game extends Thread {
                             reopen = new Socket("127.0.0.1", 8889);
                             o = reopen.getOutputStream();
                             o.write(ByteBuffer.wrap(buf, 0, 4).putInt(0, playername[turn_counter]).array());
+                            System.out.println("P" + playername[turn_counter] + " want reopen");
+                            o.flush();
                             o.write(ByteBuffer.wrap(buf, 0, 4).putInt(0, playername[(turn_counter+1)%2]).array());
+                            System.out.println("P" + playername[(turn_counter+1)%2] + " want reopen");
+                            o.close();
                             feedback = new Socket("127.0.0.1",8888);
                             o = feedback.getOutputStream();
                             o.write(Roomname.getBytes());
@@ -292,11 +296,8 @@ public class Game extends Thread {
                 }
                 turn_counter = (turn_counter + 1) % 2;
             }
-            in[0].close();
-            in[1].close();
-            out[0].close();
-            out[1].close();
         } catch (IOException | InterruptedException e) {
+            System.err.println(e);
             // if someone out should send server to delete this room
             Socket feedback;
             OutputStream o;
@@ -309,14 +310,12 @@ public class Game extends Thread {
                     alive_player = 0;
                 } catch (Exception e2) {
                     System.out.println("P1 exit!");
-                    Play[0].close();
                 }
                 try {
                     out[1].write(order.getBytes());
                     alive_player = 1;
                 } catch (Exception e2) {
                     System.out.println("P2 exit!");
-                    Play[1].close();
                 }
                 reopen = new Socket("127.0.0.1", 8889);
                 o = reopen.getOutputStream();
@@ -331,6 +330,7 @@ public class Game extends Thread {
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
+            
         }
     }
 }
