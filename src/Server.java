@@ -198,8 +198,7 @@ public class Server
 										r.P1.getOutputStream().write(buf);
 										r.P1.getOutputStream().flush();
 										play = true;
-										Game game = new Game(r.RoomName, r.P1, r.P1_num, r.P2, r.P2_num);
-										game.start();
+										
 									} else {
 										ByteBuffer.wrap(buf, 0, 4).putInt(0, -1);
 										out.write(buf);
@@ -227,7 +226,14 @@ public class Server
 							play = false;
 							break;
 						case 5: // close match table
+							mode = -1;
 							play = true;
+							for (RoomType r : room){
+								if(r.P1_num == ThreadName){
+									Game game = new Game(r.RoomName, r.P1, r.P1_num, r.P2, r.P2_num);
+									game.start();
+								}
+							}
 							break;
 					}
 				}
@@ -292,6 +298,7 @@ public class Server
 					in = sc.getInputStream();
 					in.read(buf);
 					int name = ByteBuffer.wrap(buf, 0, 4).getInt();
+					System.out.println("P"+name+" is reopen");
 					for(ScType s : userSocket){
 						if(s.name == name){
 							Thread matchTableThread = new Thread(new matchTable(s.s,s.name));
