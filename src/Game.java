@@ -246,6 +246,14 @@ public class Game extends Thread {
                             order = "win";
                             System.out.println("win");
                             win = true;
+
+                            Socket feedback;
+                            OutputStream o;
+                            feedback = new Socket("127.0.0.1",8888);
+                            o = feedback.getOutputStream();
+                            o.write(Roomname.getBytes());
+                            o.close();
+                            feedback.close();
                             /*
                             * out to both side to finish the game
                             * */
