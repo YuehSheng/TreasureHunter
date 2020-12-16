@@ -27,6 +27,7 @@ public class Client
   static boolean match = false;
   static boolean wait = false;
   static boolean near = false;
+  static boolean win = false;
   static int sight = 3;
   static boolean running = false;
   static byte[] map;
@@ -436,6 +437,7 @@ public class Client
               int result = ByteBuffer.wrap(buf,0,4).getInt();
               if(result == 1){
                 land.setText("You Win!!");
+                win = true;
               }
               else{
                 land.setText("Not this position");
@@ -580,7 +582,7 @@ public class Client
         turn.setVisible(false);
 
         /*start to get server's order*/
-        while (true){
+        while (!win){
           if(running){
             Thread.sleep(200);
           }
@@ -688,6 +690,7 @@ public class Client
             }
             if(near){
               alert.setEnabled(true);
+              alert.setLocationRelativeTo(game);
               alert.setVisible(true);
             }
             else{

@@ -249,6 +249,7 @@ public class Game extends Thread {
                             System.out.println("win");
                             win = true;
 
+                            out[(turn_counter+1)%2].write(order.getBytes());
                             Socket feedback;
                             OutputStream o;
                             Socket reopen;
