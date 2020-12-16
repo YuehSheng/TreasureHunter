@@ -20,7 +20,7 @@ public class Game extends Thread {
     String order = null;
     int[] pos_x = new int[2]; // player1 and player2 position
     int[] pos_y = new int[2];
-
+    int[] playername = new int[2];
     // use to create map
     // use to send
     byte[] map = new byte[42 * 42];
@@ -59,8 +59,10 @@ public class Game extends Thread {
         }
     }
 
-    public Game(String Roomname, Socket player1, Socket player2) {
+    public Game(String Roomname, Socket player1,int P1_name, Socket player2, int P2_name) {
         this.Roomname = Roomname;
+        playername[0] = P1_name;
+        playername[1] = P2_name;
         Play[P1] = player1;
         Play[P2] = player2;
         try {
@@ -249,11 +251,17 @@ public class Game extends Thread {
 
                             Socket feedback;
                             OutputStream o;
+                            Socket reopen;
+                            reopen = new Socket("127.0.0.1", 8889);
+                            o = reopen.getOutputStream();
+                            o.write(ByteBuffer.wrap(buf, 0, 4).putInt(0, playername[turn_counter]).array());
+                            o.write(ByteBuffer.wrap(buf, 0, 4).putInt(0, playername[(turn_counter+1)%2]).array());
                             feedback = new Socket("127.0.0.1",8888);
                             o = feedback.getOutputStream();
                             o.write(Roomname.getBytes());
                             o.close();
                             feedback.close();
+                            reopen.close();
                             /*
                             * out to both side to finish the game
                             * */
@@ -293,22 +301,31 @@ public class Game extends Thread {
             // if someone out should send server to delete this room
             Socket feedback;
             OutputStream o;
+            Socket reopen;
+            int alive_player = 0;
             order = "exit";
             try {
                 try {
                     out[0].write(order.getBytes());
+                    alive_player = 0;
                 } catch (Exception e2) {
                     System.out.println("P1 exit!");
                 }
                 try {
                     out[1].write(order.getBytes());
+                    alive_player = 1;
                 } catch (Exception e2) {
                     System.out.println("P2 exit!");
                 }
+                reopen = new Socket("127.0.0.1", 8889);
+                o = reopen.getOutputStream();
+                byte[] buf = new byte[4];
+                o.write(ByteBuffer.wrap(buf).putInt(0, playername[alive_player]).array());
                 feedback = new Socket("127.0.0.1",8888);
                 o = feedback.getOutputStream();
                 o.write(Roomname.getBytes());
                 o.close();
+                reopen.close();
                 feedback.close();
             } catch (Exception e1) {
                 e1.printStackTrace();
