@@ -170,7 +170,7 @@ public class Server
 								if (!exist) {
 									room.add(new RoomType(roomName, PlayName, sc, ThreadName));
 									ByteBuffer.wrap(buf, 0, 4).putInt(1);
-									play = true;
+
 								} else {
 									ByteBuffer.wrap(buf, 0, 4).putInt(-1);
 								}
@@ -192,7 +192,7 @@ public class Server
 											// send to P1
 											r.P1.getOutputStream().write(buf);
 											r.P1.getOutputStream().flush();
-											play = true;
+
 											Game game = new Game(r.RoomName, r.P1, r.P2);
 											game.start();
 										}

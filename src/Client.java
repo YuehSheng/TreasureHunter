@@ -178,6 +178,17 @@ public class Client
       JButton refresh = new JButton("Refresh");
       final JTextField rName = new JTextField();
       JFrame waiting = new JFrame("waiting");
+      waiting.setUndecorated(true);
+      JPanel p1 = new JPanel(new BorderLayout());
+      p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
+      JButton exitButt = new JButton("Exit");
+      waiting.getContentPane().add(p1);
+      waiting.getContentPane().add(exitButt,BorderLayout.SOUTH);
+
+      waiting.pack();
+
+      waiting.setLocationRelativeTo(matchTable);
+      waiting.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       DefaultListModel<String> l1 = new DefaultListModel<>();
       JList<String> list = new JList<>(l1);
       JButton join = new JButton("Join");
@@ -266,10 +277,7 @@ public class Client
               int result = ByteBuffer.wrap(buf,0,4).getInt(0);
               if(result == 1){
                 System.out.println("Create success");
-                JPanel p1 = new JPanel(new BorderLayout());
-                p1.add(new JLabel("Waiting for the hunter..."), BorderLayout.SOUTH);
-                JButton button = new JButton("Exit");
-                button.addActionListener(new ActionListener() {
+                exitButt.addActionListener(new ActionListener() {
                   public void actionPerformed(ActionEvent e) {
                     matchTable.setEnabled(true);
                     waiting.setEnabled(false);
@@ -284,13 +292,10 @@ public class Client
                     }
                   }
                 });
-                waiting.setUndecorated(true);
-                waiting.getContentPane().add(p1);
-                waiting.getContentPane().add(button,BorderLayout.SOUTH);
-                waiting.pack();
+
                 waiting.setLocationRelativeTo(matchTable);
-                waiting.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 waiting.setVisible(true);
+                waiting.setEnabled(true);
                 matchTable.setEnabled(false);
                 wait = true;
 //						System.out.println(in.available());
