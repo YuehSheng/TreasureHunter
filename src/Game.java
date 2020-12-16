@@ -314,6 +314,5 @@ public class Game extends Thread {
                 e1.printStackTrace();
             }
         }
-        
     }
 }

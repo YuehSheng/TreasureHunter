@@ -105,6 +105,7 @@ public class Server
 						buf = new byte[4];
 						in.read(buf); // read mode
 						mode = ByteBuffer.wrap(buf, 0, 4).getInt(); // login = 0,create = 1,join = 2,refresh = 3,back = 4
+						System.out.println(mode);
 						buf = new byte[100];
 						in.read(buf); // read data
 						//delete useless byte to sure string is true
@@ -192,9 +193,13 @@ public class Server
 											// send to P1
 											r.P1.getOutputStream().write(buf);
 											r.P1.getOutputStream().flush();
-
+											play = true;
 											Game game = new Game(r.RoomName, r.P1, r.P2);
 											game.start();
+										}
+										else{
+											ByteBuffer.wrap(buf, 0, 4).putInt(0, -1);
+											out.write(buf);
 										}
 									} else {
 										ByteBuffer.wrap(buf, 0, 4).putInt(0, 0);
@@ -217,6 +222,9 @@ public class Server
 								mode = -1;
 								room.removeIf(r -> r.owner == ThreadName);
 								play = false;
+								break;
+							case 5:
+								play = true;
 								break;
 						}
 					}

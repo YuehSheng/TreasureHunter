@@ -321,6 +321,7 @@ public class Client
             if(in.available() > 0){
               byte[] buf = new byte[4];
               in.read(buf);
+              sendMode(5);
               match = true;
               matchTable.setVisible(false);
               waiting.setVisible(false);
