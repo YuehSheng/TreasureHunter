@@ -645,11 +645,15 @@ public class Client
             }
             else if(str.equals("win")){
               land.setText("Enemy victory, You LOSE!!!!");
-              break;
+              win = true;
+              running = false;
+
             }
             else if(str.equals("exit")){
+              win = true;
+              running = false;
               land.setText("another hunter escaped, You win!");
-              break;
+
             }
 
             // refresh map when getting new one
