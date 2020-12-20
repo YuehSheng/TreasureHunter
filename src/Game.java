@@ -321,6 +321,7 @@ public class Game extends Thread {
                 o = reopen.getOutputStream();
                 byte[] buf = new byte[4];
                 o.write(ByteBuffer.wrap(buf).putInt(0, playername[alive_player]).array());
+                o.write(ByteBuffer.wrap(buf).putInt(0, -1).array());
                 feedback = new Socket("127.0.0.1",8888);
                 o = feedback.getOutputStream();
                 o.write(Roomname.getBytes());

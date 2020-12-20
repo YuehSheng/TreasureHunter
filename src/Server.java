@@ -79,7 +79,7 @@ public class Server
 
 		}
 		catch(IOException e){
-			System.err.println(e);
+			//System.err.println(e);
 		}
 	}
 	
@@ -298,14 +298,28 @@ public class Server
 					sc = ssc.accept();
 					in = sc.getInputStream();
 					in.read(buf);
-					int name = ByteBuffer.wrap(buf, 0, 4).getInt();
-					System.out.println("P"+name+" is reopen");
-					for(ScType s : userSocket){
-						if(s.name == name){
-							Thread matchTableThread = new Thread(new matchTable(s.s,s.name));
-							matchTableThread.start();
+					int name1 = ByteBuffer.wrap(buf, 0, 4).getInt();
+					if (name1 != -1) {
+						System.out.println("P" + name1 + " is reopen");
+						for (ScType s : userSocket) {
+							if (s.name == name1) {
+								Thread matchTableThread = new Thread(new matchTable(s.s, s.name));
+								matchTableThread.start();
+							}
 						}
 					}
+					in.read(buf);
+					int name2 = ByteBuffer.wrap(buf, 0, 4).getInt();
+					if (name2 != -1) {
+						System.out.println("P" + name2 + " is reopen");
+						for (ScType s : userSocket) {
+							if (s.name == name2) {
+								Thread matchTableThread = new Thread(new matchTable(s.s, s.name));
+								matchTableThread.start();
+							}
+						}
+					}
+					
 					in.close();
 					sc.close();
 				}
