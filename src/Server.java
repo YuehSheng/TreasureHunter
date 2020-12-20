@@ -53,7 +53,7 @@ public class Server
 		ServerSocket 	serverSocket 	= null;
 		Socket 			sc 				= null;
 		int				port			= 6666;
-		int				namecounter		= 0;
+		int				namecounter		= 1;
 		try{
 			serverSocket = new ServerSocket(port);
 			System.out.println("Waiting for request ...");
@@ -239,7 +239,7 @@ public class Server
 				}
 			} 
 			catch (IOException | InterruptedException e) {
-				System.err.println(e);
+				//System.err.println(e);
 				System.out.println("P"+this.ThreadName + " out");
 				for (RoomType r : room){
 					if(r.owner == ThreadName){
@@ -295,11 +295,13 @@ public class Server
 			try {
 				ssc = new ServerSocket(8889); // diferent port
 				while (true) {
+					int name1 = 0;
+					int name2 = 0;
 					sc = ssc.accept();
 					in = sc.getInputStream();
 					in.read(buf);
-					int name1 = ByteBuffer.wrap(buf, 0, 4).getInt();
-					if (name1 != -1) {
+					name1 = ByteBuffer.wrap(buf, 0, 4).getInt();
+					if (name1 != 0) {
 						System.out.println("P" + name1 + " is reopen");
 						for (ScType s : userSocket) {
 							if (s.name == name1) {
@@ -308,9 +310,10 @@ public class Server
 							}
 						}
 					}
+					buf = new byte[100];
 					in.read(buf);
-					int name2 = ByteBuffer.wrap(buf, 0, 4).getInt();
-					if (name2 != -1) {
+					name2 = ByteBuffer.wrap(buf, 0, 4).getInt();
+					if (name2 != 0) {
 						System.out.println("P" + name2 + " is reopen");
 						for (ScType s : userSocket) {
 							if (s.name == name2) {
