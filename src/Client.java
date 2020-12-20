@@ -177,7 +177,34 @@ public class Client
 
       matchTable.getContentPane().setLayout(null);
       JButton refresh = new JButton("Refresh");
+      refresh.setBounds(200,150,100,100);
+      refresh.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            matchTable.getContentPane().remove(scrollableList);
+            DefaultListModel<String> l1 = new DefaultListModel<>();
+            for(String s : refresh()){
+              l1.addElement(s);
+            }
+            JList<String> list = new JList<>(l1);
+            list.setBounds(100,100, 200,75);
+            scrollableList = new JScrollPane(list);
+            scrollableList.setBounds(50,150,100,180);
+            scrollableList.setSize(100,210);
+            scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            matchTable.getContentPane().add(scrollableList);
+            matchTable.invalidate();
+            matchTable.validate();
+          } catch (IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+      });
+
+
       final JTextField rName = new JTextField();
+      rName.setBounds(50,50, 100,30);
       JFrame waiting = new JFrame("waiting");
       waiting.setUndecorated(true);
       JPanel p1 = new JPanel(new BorderLayout());
@@ -192,15 +219,91 @@ public class Client
       waiting.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       DefaultListModel<String> l1 = new DefaultListModel<>();
       JList<String> list = new JList<>(l1);
+      list.setBounds(100,100, 200,75);
       JButton join = new JButton("Join");
+      join.setBounds(200,260,100,100);
+      join.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JList l = (JList) scrollableList.getViewport().getView();//get new list
+          String sel = l.getSelectedValue().toString();
+          if(sel.equals(""))
+            return;
+          System.out.println("select "+sel);
+          try {
+            byte[] buf = send(2,sel);
+
+            int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+            if(result == 1){
+              System.out.println("join");
+              match = true;
+              matchTable.setVisible(false);
+            }
+            else {
+              System.out.println("fail");
+            }
+          } catch (IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+      });
+
+
       JButton create = new JButton("Create");
+      create.setBounds(200,50,100,30);
+      create.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            String name = rName.getText();
+            if(name.equals("")){
+              return;
+            }
+            System.out.println(name);
+            byte[] buf = send(1,name);
+            int result = ByteBuffer.wrap(buf,0,4).getInt(0);
+            if(result == 1){
+              System.out.println("Create success");
+              exitButt.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                  matchTable.setEnabled(true);
+                  waiting.setEnabled(false);
+                  waiting.setVisible(false);
+//                    matchTable.remove(waiting);
+                  wait = false;
+                  /*exit*/
+                  try {
+                    sendMode(4);
+                  } catch (IOException ex) {
+                    ex.printStackTrace();
+                  }
+                }
+              });
+
+              waiting.setLocationRelativeTo(matchTable);
+              waiting.setVisible(true);
+              waiting.setEnabled(true);
+              matchTable.setEnabled(false);
+              wait = true;
+//						System.out.println(in.available());
+            }
+            else{
+              wait = false;
+              System.out.println("Create fail");
+            }
+          } catch (IOException ex) {
+            ex.printStackTrace();
+          }
+        }
+      });
+
+
       while(!end){
         match = false;
-        rName.setBounds(50,50, 100,30);
         /*
         get tables from server
         */
-
+        if(scrollableList != null)
+          matchTable.getContentPane().remove(scrollableList);
+        l1 = new DefaultListModel<>();
         for(String s : refresh()){
           l1.addElement(s);
         }
@@ -211,105 +314,9 @@ public class Client
         scrollableList.setSize(100,210);
         scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-
-        refresh.setBounds(200,150,100,100);
-        refresh.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            try {
-              matchTable.getContentPane().remove(scrollableList);
-              DefaultListModel<String> l1 = new DefaultListModel<>();
-              for(String s : refresh()){
-                l1.addElement(s);
-              }
-              JList<String> list = new JList<>(l1);
-              list.setBounds(100,100, 200,75);
-              scrollableList = new JScrollPane(list);
-              scrollableList.setBounds(50,150,100,180);
-              scrollableList.setSize(100,210);
-              scrollableList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-              scrollableList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-              matchTable.getContentPane().add(scrollableList);
-              matchTable.invalidate();
-              matchTable.validate();
-            } catch (IOException ex) {
-              ex.printStackTrace();
-            }
-          }
-        });
-
-        join.setBounds(200,260,100,100);
-        join.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            JList l = (JList) scrollableList.getViewport().getView();//get new list
-            String sel = l.getSelectedValue().toString();
-            if(sel.equals(""))
-              return;
-            System.out.println("select "+sel);
-            try {
-              byte[] buf = send(2,sel);
-
-              int result = ByteBuffer.wrap(buf,0,4).getInt(0);
-              if(result == 1){
-                System.out.println("join");
-                match = true;
-                matchTable.setVisible(false);
-              }
-              else {
-                System.out.println("fail");
-              }
-            } catch (IOException ex) {
-              ex.printStackTrace();
-            }
-          }
-        });
-
-
-        create.setBounds(200,50,100,30);
-        create.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            try {
-              String name = rName.getText();
-              if(name.equals("")){
-                return;
-              }
-              System.out.println(name);
-              byte[] buf = send(1,name);
-              int result = ByteBuffer.wrap(buf,0,4).getInt(0);
-              if(result == 1){
-                System.out.println("Create success");
-                exitButt.addActionListener(new ActionListener() {
-                  public void actionPerformed(ActionEvent e) {
-                    matchTable.setEnabled(true);
-                    waiting.setEnabled(false);
-                    waiting.setVisible(false);
-//                    matchTable.remove(waiting);
-                    wait = false;
-                    /*exit*/
-                    try {
-                      sendMode(4);
-                    } catch (IOException ex) {
-                      ex.printStackTrace();
-                    }
-                  }
-                });
-
-                waiting.setLocationRelativeTo(matchTable);
-                waiting.setVisible(true);
-                waiting.setEnabled(true);
-                matchTable.setEnabled(false);
-                wait = true;
-//						System.out.println(in.available());
-              }
-              else{
-                wait = false;
-                System.out.println("Create fail");
-              }
-            } catch (IOException ex) {
-              ex.printStackTrace();
-            }
-          }
-        });
+        matchTable.getContentPane().add(scrollableList);
+        matchTable.invalidate();
+        matchTable.validate();
 
         matchTable.add(join);
         matchTable.add(create);
